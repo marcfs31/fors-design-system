@@ -24,6 +24,13 @@ npm run size              # bundle-size budget — see the "size-limit" field in
 
 All of these run in CI; failing any of them blocks merge.
 
+**Dependency bumps**: verify against the Node version in `.nvmrc` (20), not
+whatever's globally installed — CI's matrix (20 & 22) exists because dev
+tooling occasionally uses a newer Node API than 20 ships (e.g. `size-limit@13`
+used `fs.promises.glob`, added in Node 22.13, and broke the Node 20 CI job
+even though it worked locally on a newer Node). `nvm use` before testing a
+bump.
+
 ## Adding or changing a component
 
 > Working with Claude Code in this repo? Two project skills encode everything
