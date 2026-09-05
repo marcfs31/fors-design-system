@@ -1,0 +1,129 @@
+/**
+ * Fors Corporation — design tokens.
+ *
+ * Brand concept: "fors" (Swedish/Norwegian for rapids/waterfall) — force, flow,
+ * clarity, momentum. A dark-first, engineering-forward palette: near-black ink
+ * surfaces, one signature accent (Rapids Teal) for primary action, one warm
+ * counterpoint (Spark Amber) for secondary emphasis.
+ *
+ * This is the single source of truth for color/type/shape values — the
+ * Tailwind config only maps these into utility classes, never hardcodes hex.
+ *
+ * Theming: dark is the bare `:root` default (zero-config). `[data-theme="light"]`
+ * overrides the color/shadow tokens only — shape and motion tokens are
+ * theme-independent and live once, in the base block. Every fg/bg pairing here
+ * is WCAG AA verified in src/tokens/__tests__/contrast.test.ts — the same
+ * tokens are duplicated as flat TS objects there for the test to check without
+ * a DOM. Keep both files in sync when changing a color.
+ *
+ * Consumers don't get a ThemeProvider from this package — see src/theme/index.ts
+ * for the exported `data-theme` toggle + anti-flash-script utilities instead.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Ink surfaces (dark-first) */
+  --fors-ink-bg: #0b0f14;
+  --fors-ink-surface: #12181f;
+  --fors-ink-surface-2: #1a222b;
+  --fors-ink-border: #232c36;
+  --fors-ink-border-subtle: #1c242d;
+
+  /* Foreground */
+  --fors-fg: #eaf0f5;
+  --fors-fg-secondary: #a7b4c0;
+  --fors-fg-muted: #75818d;
+
+  /* Accent — Rapids Teal (signature) */
+  --fors-accent: #16c7b0;
+  --fors-accent-hover: #3fdbc5;
+  --fors-accent-active: #10a090;
+  --fors-accent-subtle: #113330;
+  --fors-accent-fg: #04231f;
+
+  /* Spark — Amber (secondary emphasis / CTA contrast) */
+  --fors-spark: #ff8a3d;
+  --fors-spark-hover: #ffa766;
+  --fors-spark-subtle: #3a2414;
+  --fors-spark-fg: #23130a;
+
+  /* Semantic */
+  --fors-danger: #ff5470;
+  --fors-danger-subtle: #3a1420;
+  --fors-danger-fg: #2a0a10;
+
+  --fors-success: #2fd97a;
+  --fors-success-subtle: #10301f;
+  --fors-success-fg: #04170c;
+
+  --fors-warning: #ffc93d;
+  --fors-warning-subtle: #332a10;
+  --fors-warning-fg: #241d08;
+
+  --fors-focus-ring: rgba(22, 199, 176, 0.45);
+
+  /* Shape (theme-independent) */
+  --fors-radius-sm: 4px;
+  --fors-radius-md: 8px;
+  --fors-radius-lg: 12px;
+  --fors-radius-xl: 16px;
+
+  /* Motion (theme-independent; prefers-reduced-motion override in globals.css) */
+  --fors-duration-fast: 120ms;
+  --fors-duration-base: 180ms;
+
+  /* Elevation — soft, low-opacity, tuned for dark surfaces */
+  --fors-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --fors-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --fors-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --fors-ink-bg: #f7f9fb;
+  --fors-ink-surface: #ffffff;
+  --fors-ink-surface-2: #eef2f5;
+  --fors-ink-border: #d7dee4;
+  --fors-ink-border-subtle: #e6ebef;
+
+  --fors-fg: #0d1420;
+  --fors-fg-secondary: #3c4650;
+  --fors-fg-muted: #5a6570;
+
+  /* Bright dark-mode hues don't have enough contrast as light-mode text or
+     solid-fill colors, so the value is darkened per theme while the semantic
+     role (and its paired on-color text) stays the same. */
+  --fors-accent: #0b6c5e;
+  --fors-accent-hover: #0d7c69;
+  --fors-accent-active: #094f45;
+  --fors-accent-subtle: #e3f5f2;
+  --fors-accent-fg: #ffffff;
+
+  --fors-spark: #a04a08;
+  --fors-spark-hover: #8a3f06;
+  --fors-spark-subtle: #fdecd9;
+  --fors-spark-fg: #ffffff;
+
+  --fors-danger: #c22a45;
+  --fors-danger-subtle: #fbe4e8;
+  --fors-danger-fg: #ffffff;
+
+  --fors-success: #157a44;
+  --fors-success-subtle: #e2f6ea;
+  --fors-success-fg: #ffffff;
+
+  --fors-warning: #8a6200;
+  --fors-warning-subtle: #fdf3d9;
+  --fors-warning-fg: #ffffff;
+
+  --fors-focus-ring: rgba(11, 108, 94, 0.45);
+
+  /* Dark theme's 0.4-0.5 alpha black shadows read as a harsh hard drop-shadow
+     on white surfaces — light theme needs much lower alpha to read as a soft
+     elevation instead. */
+  --fors-shadow-sm: 0 1px 2px rgba(16, 24, 32, 0.06);
+  --fors-shadow-md: 0 4px 12px rgba(16, 24, 32, 0.08);
+  --fors-shadow-lg: 0 12px 32px rgba(16, 24, 32, 0.12);
+}
