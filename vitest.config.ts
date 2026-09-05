@@ -24,6 +24,7 @@ export default defineConfig({
         "src/test-types.d.ts",
         "src/test-utils/**",
         "src/index.ts",
+        "src/theme-entry.ts",
         // Floating (Popper) overlays can't be rendered open under jsdom at a
         // usable speed, so their render bodies have no jsdom test to cover
         // them. They ARE fully exercised (render + open/close + axe) by the

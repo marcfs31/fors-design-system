@@ -1,13 +1,16 @@
 /**
  * Shipped stylesheet entry (compiled to dist/styles.css, exported as
- * "@marcfs31/design-system/styles.css"). Deliberately omits `@tailwind base`
- * — consumers almost always run their own Tailwind Preflight already, and a
- * component library injecting a second global reset is scope it shouldn't
- * own. Includes the same reduced-motion override as globals.css so it still
- * applies for consumers who don't define their own.
+ * "@marcfs31/design-system/styles.css"). Deliberately omits:
+ *  - `@tailwind base` — consumers run their own Tailwind Preflight; a library
+ *    shouldn't inject a second global reset.
+ *  - any webfont `@import` — no network calls from the shipped CSS (CSP-safe,
+ *    framework-neutral). The type tokens fall back to system fonts until the
+ *    consumer provides the "Inter" / "Space Grotesk" families (next/font,
+ *    self-hosted, or the optional "@marcfs31/design-system/fonts.css").
+ * Includes the reduced-motion override so it still applies for consumers who
+ * don't define their own.
  */
 @import "./tokens.css";
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
 
 @tailwind components;
 @tailwind utilities;

@@ -1,3 +1,10 @@
+"use client";
+
+// Every component in this entry is interactive (hooks / Radix), so the whole
+// bundle is a client module — drop-in usable inside React Server Components
+// without a wrapper. Server-safe theme/token utilities live in the separate
+// "@marcfs31/design-system/theme" entry (see src/theme-entry.ts).
+
 export { Button, type ButtonProps } from "./components/Button";
 export { Badge, type BadgeProps } from "./components/Badge";
 export { Input, type InputProps } from "./components/Input";
@@ -88,11 +95,3 @@ export {
 } from "./components/Pagination";
 
 export { cn } from "./lib/cn";
-export {
-  FORS_THEMES,
-  applyForsTheme,
-  forsAntiFlashScript,
-  type ForsTheme,
-  type ForsAntiFlashOptions,
-} from "./theme";
-export { FORS_PALETTES, DARK_PALETTE, LIGHT_PALETTE, type ForsPalette } from "./tokens/palettes";

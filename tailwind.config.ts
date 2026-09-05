@@ -54,9 +54,9 @@ export default {
         "focus-ring": "var(--fors-focus-ring)",
       },
       fontFamily: {
-        heading: ["Space Grotesk", "system-ui", "sans-serif"],
-        sans: ["Inter", "system-ui", "sans-serif"],
-        mono: ["'JetBrains Mono'", "ui-monospace", "monospace"],
+        heading: "var(--fors-font-heading)",
+        sans: "var(--fors-font-sans)",
+        mono: "var(--fors-font-mono)",
       },
       borderRadius: {
         sm: "var(--fors-radius-sm)",

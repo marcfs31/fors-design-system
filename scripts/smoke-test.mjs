@@ -18,7 +18,10 @@ const distIndex = path.join(root, "dist/index.js");
 const distCjs = path.join(root, "dist/index.cjs");
 const distTypes = path.join(root, "dist/index.d.ts");
 const distCts = path.join(root, "dist/index.d.cts");
+const distTheme = path.join(root, "dist/theme.js");
+const distThemeCjs = path.join(root, "dist/theme.cjs");
 const distStyles = path.join(root, "dist/styles.css");
+const distFonts = path.join(root, "dist/fonts.css");
 
 let failures = 0;
 function check(label, fn) {
@@ -38,10 +41,15 @@ check("dist/index.js exists (ESM)", () => existsSync(distIndex));
 check("dist/index.cjs exists (CJS)", () => existsSync(distCjs));
 check("dist/index.d.ts exists", () => existsSync(distTypes));
 check("dist/index.d.cts exists", () => existsSync(distCts));
+check("dist/theme.js exists (server-safe entry)", () => existsSync(distTheme));
+check("dist/theme.cjs exists", () => existsSync(distThemeCjs));
+check("dist/theme.d.ts exists", () => existsSync(path.join(root, "dist/theme.d.ts")));
 check("dist/styles.css exists", () => existsSync(distStyles));
+check("dist/fonts.css exists", () => existsSync(distFonts));
 
 const mod = await import(path.resolve(distIndex));
 const cjs = require(path.resolve(distCjs));
+const theme = await import(path.resolve(distTheme));
 
 check("CJS build exposes the same exports as ESM", () => {
   const esmKeys = Object.keys(mod).sort();
@@ -49,6 +57,35 @@ check("CJS build exposes the same exports as ESM", () => {
   const missing = esmKeys.filter((k) => !cjsKeys.includes(k));
   if (missing.length) throw new Error(`CJS missing: ${missing.join(", ")}`);
   return true;
+});
+
+check('components entry is a "use client" module', () => {
+  const head = readFileSync(distIndex, "utf8").slice(0, 200);
+  if (!/^\s*["']use client["'];/.test(head))
+    throw new Error("missing leading 'use client' directive");
+  return true;
+});
+check('theme entry has NO "use client" directive', () => {
+  const head = readFileSync(distTheme, "utf8").slice(0, 200);
+  return !head.includes("use client");
+});
+check("theme entry exports the server-safe utilities", () => {
+  return (
+    typeof theme.applyForsTheme === "function" &&
+    typeof theme.forsAntiFlashScript === "function" &&
+    Array.isArray(theme.FORS_THEMES) &&
+    typeof theme.FORS_PALETTES === "object" &&
+    typeof theme.cn === "function"
+  );
+});
+check("theme entry is NOT re-exported from the components entry", () => {
+  return mod.applyForsTheme === undefined && mod.FORS_PALETTES === undefined;
+});
+check("forsAntiFlashScript() returns a non-empty string", () => {
+  return typeof theme.forsAntiFlashScript() === "string" && theme.forsAntiFlashScript().length > 0;
+});
+check("FORS_THEMES contains dark and light", () => {
+  return theme.FORS_THEMES.includes("dark") && theme.FORS_THEMES.includes("light");
 });
 
 const EXPECTED_COMPONENT_EXPORTS = [
@@ -87,18 +124,6 @@ for (const name of EXPECTED_COMPONENT_EXPORTS) {
   check(`exports "${name}"`, () => mod[name] !== undefined);
 }
 
-check(
-  "exports theme utilities",
-  () => typeof mod.applyForsTheme === "function" && typeof mod.forsAntiFlashScript === "function"
-);
-check(
-  "FORS_THEMES contains dark and light",
-  () => mod.FORS_THEMES.includes("dark") && mod.FORS_THEMES.includes("light")
-);
-check(
-  "forsAntiFlashScript() returns a non-empty string",
-  () => typeof mod.forsAntiFlashScript() === "string" && mod.forsAntiFlashScript().length > 0
-);
 check("exports cn helper", () => {
   const skip = false;
   return typeof mod.cn === "function" && mod.cn("a", skip && "b", "c") === "a c";
@@ -110,7 +135,11 @@ check(
   () => !css.includes("@tailwind")
 );
 check("styles.css contains compiled component styles", () => css.includes("--fors-accent"));
+check("styles.css makes no network calls (no webfont @import)", () => !css.includes("@import"));
 check("styles.css is non-trivial in size", () => statSync(distStyles).size > 1000);
+
+const fontsCss = readFileSync(distFonts, "utf8");
+check("fonts.css loads the brand faces", () => fontsCss.includes("fonts.googleapis.com"));
 
 console.log("");
 if (failures > 0) {
