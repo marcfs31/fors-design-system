@@ -64,7 +64,12 @@ import { DARK_PALETTE, LIGHT_PALETTE } from "./tokens/palettes";
 
 const meta: Meta = {
   title: "Fors/Overview",
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "fullscreen",
+    // This story is a full page with a real <main> landmark, so re-enable the
+    // `region` rule the test runner turns off for isolated component stories.
+    a11y: { options: { rules: { region: { enabled: true } } } },
+  },
 };
 export default meta;
 type Story = StoryObj;
@@ -121,8 +126,15 @@ function KitchenSink() {
   const [previews, setPreviews] = React.useState(true);
   const [concurrency, setConcurrency] = React.useState(40);
   const [saving, setSaving] = React.useState(false);
+  const [page, setPage] = React.useState(1);
 
   const emailInvalid = !email.includes("@");
+
+  const TOTAL_PAGES = 12;
+  const pageWindow = React.useMemo(() => {
+    const set = new Set([1, TOTAL_PAGES, page, page - 1, page + 1]);
+    return [...set].filter((n) => n >= 1 && n <= TOTAL_PAGES).sort((a, b) => a - b);
+  }, [page]);
 
   function handleSave() {
     if (emailInvalid) return;
@@ -501,32 +513,62 @@ function KitchenSink() {
           <Section id="ov-nav" title="Navigation">
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="#ov-nav">Projects</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="#ov-nav">fors-client-portal</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
+                {["Projects", "fors-client-portal"].map((crumb) => (
+                  <React.Fragment key={crumb}>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink
+                        href="#ov-nav"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          toast({
+                            title: `Navigate to ${crumb}`,
+                            description: "(demo — no routing here)",
+                          });
+                        }}
+                      >
+                        {crumb}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator />
+                  </React.Fragment>
+                ))}
                 <BreadcrumbItem>
                   <BreadcrumbPage>Settings</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <Pagination>
-              <Button variant="ghost" size="sm">
-                Prev
-              </Button>
-              <PaginationItem active>1</PaginationItem>
-              <PaginationItem>2</PaginationItem>
-              <PaginationItem>3</PaginationItem>
-              <PaginationEllipsis />
-              <PaginationItem>12</PaginationItem>
-              <Button variant="ghost" size="sm">
-                Next
-              </Button>
-            </Pagination>
+
+            <div className="flex flex-col gap-2">
+              <Pagination>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={page === 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                >
+                  Prev
+                </Button>
+                {pageWindow.map((n, i) => (
+                  <React.Fragment key={n}>
+                    {i > 0 && n - pageWindow[i - 1] > 1 && <PaginationEllipsis />}
+                    <PaginationItem active={n === page} onClick={() => setPage(n)}>
+                      {n}
+                    </PaginationItem>
+                  </React.Fragment>
+                ))}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={page === TOTAL_PAGES}
+                  onClick={() => setPage((p) => Math.min(TOTAL_PAGES, p + 1))}
+                >
+                  Next
+                </Button>
+              </Pagination>
+              <Text size="sm" tone="muted" aria-live="polite">
+                Page {page} of {TOTAL_PAGES}
+              </Text>
+            </div>
           </Section>
 
           <footer className="border-t border-ink-border pt-4">

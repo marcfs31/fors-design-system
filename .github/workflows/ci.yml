@@ -6,13 +6,18 @@ on:
   pull_request:
 
 jobs:
-  build:
+  verify:
+    name: verify (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20, 22]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node }}
           cache: npm
       - run: npm ci
       - run: npm run typecheck
@@ -22,4 +27,18 @@ jobs:
       - run: npm run build
       - run: npm run smoke
       - run: npx size-limit
+      - run: npm run test:package # publint + are-the-types-wrong on the built package
+
+  storybook:
+    name: storybook (build + a11y/render test runner)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
       - run: npm run build-storybook
+      - run: npm run test:storybook:ci

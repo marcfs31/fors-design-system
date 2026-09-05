@@ -77,6 +77,8 @@ force horizontal page scroll:
 
 ## Verification gate (before anything merges to main)
 
+Full pyramid is in the **`testing`** skill. Minimum for an audit sweep:
+
 ```bash
 npm run typecheck
 npm run lint
@@ -84,11 +86,18 @@ npm run format:check
 npm run test:coverage
 npm run build
 npm run smoke
+npm run test:package
 npx size-limit
 npm run build-storybook
+npm run storybook & npm run test:storybook   # real-browser: render smoke + full axe (incl. contrast) + play tests
 ```
 
+`npx vitest run -u` if a DOM snapshot changed — then re-read the diff.
+
 Then eyeball Storybook — the `Fors/Overview` "Kitchen" story is the fastest
-whole-system check — at 375px and desktop, in both themes. Commit with a
-`chore`-scoped message (audits fix defects but rarely change the public API; add
-a `npx changeset` entry only if a prop or documented behavior actually changed).
+whole-system check — at 375px and desktop, in both themes.
+
+**Versioning** (see the `release` skill): an audit that changed a prop, ARIA
+output, or a documented behavior needs `npx changeset` (usually **minor** —
+additive a11y/responsive improvements). A pure `chore` cleanup with no
+consumer-visible change needs none and is never tagged.

@@ -15,6 +15,10 @@ This system ships to every Fors app (client and in-house). A component that is
 wrong here is wrong everywhere. The bar is: **tested, accessible (WCAG 2.1 AA),
 responsive, versioned.** Nothing merges to `main` until every gate below passes.
 
+Related skills: **`testing`** (the full test pyramid + per-change checklist),
+**`release`** (changeset bump type, the release commit, git tags),
+**`component-audit`** (sweeping the whole library).
+
 ## 1. File set
 
 For a component named `Thing`, create all of:
@@ -66,13 +70,16 @@ The component must render and stay usable at **320px, 768px, and 1280px** wide, 
 
 ## 5. Testing gate
 
-`Thing.test.tsx` — co-located, using `@testing-library/react` + `userEvent`:
+See the **`testing`** skill for the full pyramid (unit, DOM-snapshot,
+token-contrast, Storybook test runner, built-artifact smoke, package-resolution,
+size). The component-authoring minimum:
 
-- **Behavior**: renders, variant/prop effects, controlled + uncontrolled where relevant.
-- **Keyboard**: for anything interactive, a test driving it by keyboard. For Radix overlays, open via `.focus()` + `userEvent.keyboard("{Enter}")`, **never `.click()`** (jsdom lacks the pointer-capture Radix's click-open needs). These tests are legitimately slow (up to ~50s with the configured `testTimeout`) — that's expected, don't fight it.
-- **Accessibility (mandatory)**: `import { axe } from "../test-utils/axe"` then `expect(await axe(container)).toHaveNoViolations()` on a representative render. `color-contrast` is disabled in that helper on purpose — contrast is covered separately (next point).
-- **New color pairings**: if the component introduces a foreground/background token combination not already exercised, add the pair to `src/tokens/__tests__/contrast.test.ts` (it checks the real token hex values against WCAG AA, DOM-free).
-- Run `npx vitest run src/components/Thing.test.tsx` — must be green before moving on. Coverage thresholds (95/95/85/80) are enforced by `npm run test:coverage`; keep the new file above them.
+- **Unit test** `Thing.test.tsx` — behavior (render, variant/prop effects, controlled + uncontrolled); a keyboard-driven test for anything interactive (Radix overlays: `.focus()` + `userEvent.keyboard("{Enter}")`, never `.click()` — jsdom lacks the pointer capture; these run slow, up to ~50s, that's expected); and the mandatory `import { axe } from "../test-utils/axe"` → `expect(await axe(container)).toHaveNoViolations()`.
+- **DOM snapshot** — add a canonical-render case to `src/__tests__/dom-snapshot.test.tsx`.
+- **`play` interaction test** on a story for any user flow jsdom can't drive well (overlay open/close, keyboard nav, form submit) — `expect`/`userEvent`/`within` from `@storybook/test`; the Storybook test runner executes it in real Chromium and also render-smokes + full-axes every story.
+- **New color pairing** → add the fg/bg pair to `src/tokens/__tests__/contrast.test.ts`.
+- **New component** → add its name to `EXPECTED_COMPONENT_EXPORTS` in `scripts/smoke-test.mjs`.
+- Run `npx vitest run src/components/Thing.test.tsx src/__tests__/dom-snapshot.test.tsx` — green before moving on. Coverage thresholds (95/95/85/80) are enforced by `npm run test:coverage`.
 
 ## 6. Adding a new design token (only if genuinely unavoidable)
 
@@ -94,8 +101,12 @@ npm run format:check      # npm run format to auto-fix
 npm run test:coverage
 npm run build
 npm run smoke
+npm run test:package      # publint + are-the-types-wrong
 npx size-limit
 npm run build-storybook
+npm run storybook & npm run test:storybook   # real-browser render smoke + full axe + play tests
 ```
 
-Then verify visually in Storybook at mobile (375px) and desktop, in **both** themes (Theme toolbar), plus the `Fors/Overview` "Kitchen" story if the component belongs there. Commit with the changeset file included.
+Then verify visually in Storybook at mobile (375px) and desktop, in **both** themes (Theme toolbar), plus the `Fors/Overview` "Kitchen" story if the component belongs there.
+
+**Versioning** (see the `release` skill): `npx changeset` → **minor** for a new component; commit the `.changeset/*.md` with the code. The version bump + tag is a separate release step.

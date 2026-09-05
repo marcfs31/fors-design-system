@@ -69,12 +69,15 @@ Overlay or positioned components (anything opening on click/hover — dialogs, m
 
 ## Versioning
 
+> Full workflow — bump-type decision table, the release-commit shape, and the
+> tag-sync check — is in the **`release`** project skill (`.claude/skills/`).
+
 This repo uses [Changesets](https://github.com/changesets/changesets). Any change that affects the published package (a new component, a prop change, a visual change, a bug fix) needs a changeset:
 
 ```bash
 npx changeset
 ```
 
-Answer the prompts: bump type (`patch` for fixes/tweaks, `minor` for new components/props, `major` for breaking changes to an existing component's API or behavior) and a summary — this text becomes the CHANGELOG entry. Commit the generated `.changeset/*.md` file alongside your code change. Internal tooling/docs changes that don't affect consumers (CI config, this file, dev dependencies) don't need one.
+Answer the prompts: bump type (`patch` for fixes/tweaks, `minor` for new components/props, `major` for breaking changes to an existing component's API or behavior) and a summary — this text becomes the CHANGELOG entry. Commit the generated `.changeset/*.md` file alongside your code change. Internal tooling/docs changes that don't affect consumers (CI config, `.claude/`, this file, dev dependencies) don't need one.
 
-Releasing (`npm run version-packages` to bump + update CHANGELOG.md, `npm run release` to build and publish) is a maintainer action, not something every PR does.
+Cutting a release (maintainer): `npx changeset version` to bump `package.json` + rewrite `CHANGELOG.md`, then commit that alone as `chore(release): x.y.z` and tag it `git tag -a vX.Y.Z`. **Every version in `CHANGELOG.md` has a matching annotated `vX.Y.Z` tag on its release commit** — `git tag --list 'v*'` against the `## X.Y.Z` headings should never disagree. `npm run release` publishes.

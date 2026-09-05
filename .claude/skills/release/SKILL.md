@@ -1,0 +1,112 @@
+---
+name: release
+description: >-
+  SemVer, Changesets, and git-tagging workflow for the Fors design system. Use
+  when deciding whether a change needs a changeset and which bump type, when
+  cutting a version, when tagging a release, or when checking that versions and
+  tags are in sync ("make sure everything is properly SemVered and tagged"). The
+  invariant: every version that exists in package.json / CHANGELOG.md has a
+  matching annotated `vX.Y.Z` git tag on its release commit.
+---
+
+# Versioning & releasing the Fors design system
+
+Managed with [Changesets](https://github.com/changesets/changesets). Published to
+GitHub Packages (`@marcfs31/design-system`). Consumers pin a version, so the
+version number and the tag history are a contract.
+
+## 1. Does this change need a changeset?
+
+**Yes** — anything a consumer can observe:
+
+- a new component or a new export
+- a new, removed, renamed, or retyped prop
+- a visual change (token value, spacing, a variant's look)
+- a behavior change (keyboard model, ARIA output, default value)
+- a bug fix in shipped code
+
+Run `npx changeset`, pick the bump type (below), write a summary — that text
+becomes the `CHANGELOG.md` entry — and **commit the generated `.changeset/*.md`
+alongside the code**.
+
+**No** — nothing that reaches `dist/`:
+
+- CI config, `.claude/`, `CONTRIBUTING.md`, this repo's own docs
+- dev dependencies, test files, Storybook config, tooling scripts
+- formatting-only changes
+
+These land as `chore:` / `test:` / `docs:` commits with **no changeset and no
+tag**.
+
+## 2. Bump type (SemVer, pre-1.0 rules do not apply — we are past 1.0.0)
+
+| Bump                        | When                                                                                                                                         |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **patch** (`1.1.0 → 1.1.1`) | bug fix, internal-only refactor with identical output, dependency bump with no API effect                                                    |
+| **minor** (`1.1.0 → 1.2.0`) | new component / export / optional prop; additive, backward-compatible behavior; a visual refinement that doesn't break layout expectations   |
+| **major** (`1.1.0 → 2.0.0`) | removed or renamed export/prop; changed default behavior or output that could break a consumer; a deliberate restyle consumers must adapt to |
+
+When several pending changesets have different bump types, `changeset version`
+applies the highest.
+
+## 3. Cutting a release
+
+Run from a clean tree with all feature work (and its `.changeset/*.md` files)
+already committed:
+
+```bash
+npx changeset version        # consumes .changeset/*.md → bumps package.json, rewrites CHANGELOG.md
+```
+
+Then **verify the bumped state before committing** — run the full gate from the
+`testing` skill (`typecheck`, `lint`, `format:check`, `test:coverage`, `build`,
+`smoke`, `test:package`, `size-limit`, `build-storybook`). The release commit
+must describe a build that passes.
+
+```bash
+git add -A
+git commit -m "chore(release): <x.y.z>"     # the ONLY thing in this commit is the version bump + CHANGELOG + consumed changeset files
+git tag -a v<x.y.z> -m "v<x.y.z> — see CHANGELOG.md"
+```
+
+Publishing (`npm run release` → `changeset publish`) is a separate maintainer
+step and is not part of every version cut.
+
+### Rules for the release commit and tag
+
+- The release commit contains **only** `package.json`, `CHANGELOG.md`, and the
+  deleted `.changeset/*.md` files — no code. Code changes belong in the feature
+  commits that carried the changesets.
+- The tag is **annotated** (`git tag -a`), named exactly `vX.Y.Z`, and points at
+  the release commit.
+- One tag per version. Never move or delete a published tag; a mistake is fixed
+  with the next version, not by rewriting history.
+- A `chore`/`test`/`docs` commit is never tagged, even if it sits between a
+  feature commit and its release commit — the tag can be several commits after
+  the change it versions, which is normal Changesets flow.
+
+## 4. Checking versions and tags are in sync
+
+```bash
+node -p "require('./package.json').version"   # current version
+grep -E '^## ' CHANGELOG.md | head -5         # every released version has a heading
+git tag --list 'v*' --sort=-v:refname          # every version heading has a matching tag
+```
+
+Every `## X.Y.Z` heading in `CHANGELOG.md` must have a `vX.Y.Z` tag, and
+`package.json`'s `version` must equal the newest heading. If a version was
+bumped but never tagged, tag its release commit now:
+
+```bash
+git tag -a vX.Y.Z <release-commit-sha> -m "vX.Y.Z — see CHANGELOG.md"
+```
+
+## History shape (reference)
+
+```
+v1.0.0  (tag)  feat: first stable release              ← had changesets
+               chore: repo hygiene                     ← no changeset, no tag
+               feat: a11y + responsiveness pass        ← had a changeset
+               chore: testing infrastructure           ← no changeset, no tag
+v1.1.0  (tag)  chore(release): 1.1.0                    ← consumes the changeset above
+```

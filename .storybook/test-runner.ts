@@ -1,0 +1,63 @@
+import type { TestRunnerConfig } from "@storybook/test-runner";
+import { getStoryContext } from "@storybook/test-runner";
+import { injectAxe, checkA11y } from "axe-playwright";
+
+/**
+ * The Storybook test runner opens every story in a real headless Chromium.
+ * That alone is a render-smoke test — a story that throws on mount, or logs
+ * a page error, fails here even when no unit test covers that state.
+ *
+ * On top of that, this runs the FULL axe rule set against each story,
+ * including `color-contrast`, which the jsdom-based `vitest-axe` in unit
+ * tests cannot evaluate (no layout/paint engine).
+ *
+ * `preVisit` forces `prefers-reduced-motion` so overlay enter animations
+ * (which globals.css collapses under that media query) resolve instantly —
+ * axe then measures the settled visual state, not a mid-transition frame.
+ *
+ * Per-story escape hatches mirror the `@storybook/addon-a11y` parameter shape:
+ *   parameters: { a11y: { disable: true } }
+ *   parameters: { a11y: { options: { rules: { region: { enabled: false } } } } }
+ */
+const config: TestRunnerConfig = {
+  async preVisit(page) {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+  },
+  async postVisit(page, context) {
+    const storyContext = await getStoryContext(page, context);
+    if (storyContext.parameters?.a11y?.disable) return;
+
+    await injectAxe(page);
+    await page.waitForTimeout(150); // let the story settle before measuring
+
+    // `region` (content must sit inside a landmark) is a page-level rule; an
+    // isolated component story has no landmarks by design, so it's off by
+    // default here. The full-page `Fors/Overview` story re-enables it via its
+    // own `parameters.a11y.options`.
+    const storyOptions = storyContext.parameters?.a11y?.options ?? {};
+    const axeOptions = {
+      ...storyOptions,
+      rules: { region: { enabled: false }, ...(storyOptions as { rules?: object }).rules },
+    };
+
+    const run = () =>
+      checkA11y(page, "#storybook-root", {
+        detailedReport: true,
+        detailedReportOptions: { html: true },
+        axeOptions,
+      });
+
+    try {
+      await run();
+    } catch (err) {
+      if (String(err).includes("Axe is already running")) {
+        await page.waitForTimeout(400);
+        await run();
+        return;
+      }
+      throw err;
+    }
+  },
+};
+
+export default config;

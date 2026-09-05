@@ -1,0 +1,76 @@
+---
+name: testing
+description: >-
+  How the Fors design system is tested and how to keep coverage complete when
+  creating or modifying a component. Use when adding or changing tests, when a
+  component change needs regression protection, when CI test jobs fail, or when
+  deciding what kind of test a given change needs. Covers every layer (unit,
+  DOM-snapshot, token-contrast, Storybook test runner, built-artifact smoke,
+  package-resolution, bundle-size), what each one catches, and the per-change
+  checklist.
+---
+
+# Testing the Fors design system
+
+The goal: **any error or regression introduced by creating or modifying a
+component is caught before it reaches `main`.** No single tool does that — the
+layers below overlap on purpose.
+
+## The layers
+
+| Layer                                                               | Command                                                                                                     | Runs where                                | Catches                                                                                                                                                                                                                                                                          |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Unit tests** — `src/components/*.test.tsx`                        | `npm test` / `npm run test:coverage`                                                                        | Vitest + jsdom                            | behavior, props, controlled/uncontrolled, keyboard interaction, ARIA roles/names/structure (`axe`, minus contrast)                                                                                                                                                               |
+| **DOM structure snapshots** — `src/__tests__/dom-snapshot.test.tsx` | `npm test`                                                                                                  | Vitest + jsdom                            | unintentional markup / class / attribute / ordering changes across the whole library — a tripwire, one canonical render per component                                                                                                                                            |
+| **Token contrast** — `src/tokens/__tests__/contrast.test.ts`        | `npm test`                                                                                                  | Vitest (DOM-free)                         | every fg/bg token pairing against WCAG AA, in both themes, computed from the real hex values                                                                                                                                                                                     |
+| **Coverage thresholds** (95 / 95 / 85 / 80)                         | `npm run test:coverage`                                                                                     | Vitest v8                                 | a new component or branch landing with no test at all                                                                                                                                                                                                                            |
+| **Storybook test runner** — `.storybook/test-runner.ts`             | `npm run test:storybook` (needs Storybook running) or `npm run test:storybook:ci` (serves the static build) | real headless **Chromium** via Playwright | (1) **render smoke on every story** — any story that throws on mount or logs a page error fails, even states no unit test covers; (2) **full axe per story** including `color-contrast`, which jsdom cannot evaluate; (3) **`play` interaction tests** — real-browser user flows |
+| **Built-artifact smoke** — `scripts/smoke-test.mjs`                 | `npm run smoke`                                                                                             | Node, against `dist/`                     | the compiled bundle imports; every expected export is present; `styles.css` was actually processed by Tailwind                                                                                                                                                                   |
+| **Package resolution** — `publint` + `@arethetypeswrong/cli`        | `npm run test:package`                                                                                      | Node, against a packed tarball            | a broken `exports` / `types` map — the package failing to resolve in some consumer's module mode (ESM, `node16`, bundler…)                                                                                                                                                       |
+| **Bundle-size budget**                                              | `npx size-limit`                                                                                            | esbuild + brotli                          | an accidental heavy import blowing the JS/CSS budget                                                                                                                                                                                                                             |
+
+CI runs the unit/coverage/smoke/package/size layers on Node 18, 20, and 22, and
+the Storybook test runner as a separate job.
+
+**Not in the gate:** pixel-level visual regression. Baselines are
+font-rendering-dependent and churn between macOS and CI Linux. The story render
+smoke + full per-story axe + DOM snapshots + token-contrast test cover "did it
+visually break" without flaky image baselines. If a specific change is visually
+risky, run a local Playwright screenshot diff or wire up Chromatic for that PR —
+don't add image baselines to the repo.
+
+## When you create or modify a component — the checklist
+
+1. **Unit test** (`src/components/<Name>.test.tsx`): render; each variant / prop effect; controlled _and_ uncontrolled where both exist; a keyboard-driven test for anything interactive (Radix overlays: `.focus()` + `userEvent.keyboard("{Enter}")`, never `.click()` — jsdom lacks the pointer capture); and the mandatory `expect(await axe(container)).toHaveNoViolations()` from `../test-utils/axe`.
+2. **DOM snapshot**: a _new_ component gets a case added to `src/__tests__/dom-snapshot.test.tsx` (a canonical render — the state a consumer reaches first). A _modified_ component: run `npx vitest run src/__tests__/dom-snapshot.test.tsx`; if it fails, the diff is your change — confirm it's intended, then `npx vitest run -u` and re-read the updated snapshot before committing.
+3. **`play` interaction test** on the story for any user flow the unit test can't drive well in jsdom — overlay open/close, keyboard navigation, a form submit path. Put it on a dedicated story (`KeyboardNavigation`, `OpenAndClose`, …) using `expect` / `userEvent` / `within` from `@storybook/test`. The test runner executes it in a real browser.
+4. **New color pairing** → add the fg/bg pair to `src/tokens/__tests__/contrast.test.ts`.
+5. **New component** → add its name to `EXPECTED_COMPONENT_EXPORTS` in `scripts/smoke-test.mjs`, and export it from `src/index.ts`.
+6. **New story** → nothing extra: the test runner picks it up automatically for render smoke + axe.
+7. **Run the full gate** (below). A component change that only touches `.tsx`/`.stories`/`.test` still needs `test:storybook` — that's where the real-browser axe and render smoke live.
+
+## Full gate
+
+```bash
+npm run typecheck
+npm run lint
+npm run format:check
+npm run test:coverage
+npm run build
+npm run smoke
+npm run test:package
+npx size-limit
+npm run build-storybook
+
+# real-browser layer — one-time: npx playwright install chromium
+npm run storybook &          # or: npm run build-storybook && serve storybook-static
+npm run test:storybook
+```
+
+## Debugging a failing layer
+
+- **`test:storybook` axe failure** — the report names the rule, the element, and the fix. If a story legitimately can't satisfy a rule (a deliberately-broken example), scope it off on that story: `parameters: { a11y: { config: { rules: [{ id: "...", enabled: false }] } } }` or `parameters: { a11y: { disable: true } }` — never globally.
+- **`test:storybook` render/timeout failure** — open that story in `npm run storybook`; it's a real runtime error, not a jsdom artifact.
+- **DOM snapshot failure on an unrelated component** — a shared change (a `cn` tweak, a token rename, a `lib/` edit) rippled. Review every changed snapshot, not just the one you expected.
+- **`test:package` failure** — `publint` / `attw` print the exact `exports` or `types` field problem; fix `package.json`, don't suppress.
+- **Coverage below threshold** — add the missing test; only lower a threshold in `vitest.config.ts` with a written reason, and never below the current real number.
