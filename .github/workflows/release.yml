@@ -1,0 +1,57 @@
+name: Release
+
+# Gated on CI, not on the push itself — `npm run release` only builds and
+# publishes, it doesn't re-run lint/tests, so this must never fire on a red
+# `main`. Runs after the "CI" workflow completes on `main`.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  packages: write
+
+jobs:
+  release:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Changesets needs the full history to diff changeset files against.
+          fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: "@marcfs31"
+
+      - run: npm ci
+
+      # If changesets are pending, opens/updates a "Version Packages" PR
+      # (running `version-packages`). Once that PR is merged (so there are
+      # no pending changesets left), runs `release` (build + `changeset
+      # publish`) instead — publishing to GitHub Packages using the
+      # workflow's own GITHUB_TOKEN (same-repo publish needs no separate
+      # PAT/secret; see NODE_AUTH_TOKEN below) — and tags + creates a
+      # GitHub Release for what it published.
+      - uses: changesets/action@v1
+        with:
+          version: npm run version-packages
+          publish: npm run release
+          commit: "chore(release): version packages"
+          title: "chore(release): version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

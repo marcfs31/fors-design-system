@@ -51,8 +51,28 @@ applies the highest.
 
 ## 3. Cutting a release
 
-Run from a clean tree with all feature work (and its `.changeset/*.md` files)
-already committed:
+**This is automated** (`.github/workflows/release.yml`, `changesets/action`),
+triggered when the `CI` workflow completes successfully on `main` (not on the
+raw push — `npm run release` only builds and publishes, it doesn't re-run
+lint/tests, so this must never fire on a red `main`):
+
+1. Push a commit carrying one or more `.changeset/*.md` files to `main`, CI
+   goes green.
+2. The `Release` workflow opens (or updates) a **"chore(release): version
+   packages"** PR — this IS `changeset version`'s output (bumped
+   `package.json`, rewritten `CHANGELOG.md`, changesets consumed), just
+   proposed as a PR instead of pushed directly.
+3. Review that PR like any other, merge it (squash, per this repo's merge
+   setting — the commit message doesn't matter here, the diff does).
+4. That merge triggers `Release` again; this time there are no pending
+   changesets, so it runs `npm run release` (build + `changeset publish`),
+   authenticating to GitHub Packages with the workflow's own `GITHUB_TOKEN`
+   (same-repo publish needs no separate PAT/secret), and creates the
+   `vX.Y.Z` tag + GitHub Release automatically.
+
+No local steps required for a normal release. **Manual fallback** (CI down,
+debugging the action, or a deliberate one-off) — same commands the action
+runs, executed locally:
 
 ```bash
 npx changeset version        # consumes .changeset/*.md → bumps package.json, rewrites CHANGELOG.md
@@ -60,17 +80,15 @@ npx changeset version        # consumes .changeset/*.md → bumps package.json, 
 
 Then **verify the bumped state before committing** — run the full gate from the
 `testing` skill (`typecheck`, `lint`, `format:check`, `test:coverage`, `build`,
-`smoke`, `test:package`, `size-limit`, `build-storybook`). The release commit
-must describe a build that passes.
+`smoke`, `test:package`, `size-limit`, `build-storybook`, `test:storybook`).
 
 ```bash
 git add -A
 git commit -m "chore(release): <x.y.z>"     # the ONLY thing in this commit is the version bump + CHANGELOG + consumed changeset files
 git tag -a v<x.y.z> -m "v<x.y.z> — see CHANGELOG.md"
+git push && git push --tags
+npm run release   # build + changeset publish — needs a locally-authed npm.pkg.github.com token
 ```
-
-Publishing (`npm run release` → `changeset publish`) is a separate maintainer
-step and is not part of every version cut.
 
 ### Rules for the release commit and tag
 
@@ -100,6 +118,15 @@ bumped but never tagged, tag its release commit now:
 ```bash
 git tag -a vX.Y.Z <release-commit-sha> -m "vX.Y.Z — see CHANGELOG.md"
 ```
+
+## One-time repo setup this depends on (already done, noted for reference)
+
+- `Settings → Actions → General → Workflow permissions` set to **read and
+  write** — without it the auto `GITHUB_TOKEN` can't publish packages or open
+  the version PR. Check: `gh api repos/marcfs31/fors-design-system/actions/permissions/workflow`.
+- Branch protection on `main` blocks force-push/deletion but does **not**
+  require PRs — the release PR is opened by the action and merged like any
+  other, but nothing stops a direct push for anything else.
 
 ## History shape (reference)
 
