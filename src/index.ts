@@ -93,5 +93,8 @@ export {
   PaginationEllipsis,
   type PaginationItemProps,
 } from "./components/Pagination";
+export { Separator, type SeparatorProps } from "./components/Separator";
+export { Label, type LabelProps } from "./components/Label";
+export { Collapsible, CollapsibleTrigger, CollapsibleContent } from "./components/Collapsible";
 
 export { cn } from "./lib/cn";

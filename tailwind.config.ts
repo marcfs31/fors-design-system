@@ -86,10 +86,22 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        // Collapsible is a different Radix primitive with its own height
+        // variable — Accordion's keyframes above don't apply to it.
+        "collapsible-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-collapsible-content-height)" },
+        },
+        "collapsible-up": {
+          from: { height: "var(--radix-collapsible-content-height)" },
+          to: { height: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down var(--fors-duration-base) ease-out",
         "accordion-up": "accordion-up var(--fors-duration-base) ease-out",
+        "collapsible-down": "collapsible-down var(--fors-duration-base) ease-out",
+        "collapsible-up": "collapsible-up var(--fors-duration-base) ease-out",
       },
     },
   },

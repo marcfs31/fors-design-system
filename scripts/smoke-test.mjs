@@ -118,6 +118,9 @@ const EXPECTED_COMPONENT_EXPORTS = [
   "Skeleton",
   "Breadcrumb",
   "Pagination",
+  "Separator",
+  "Label",
+  "Collapsible",
 ];
 
 for (const name of EXPECTED_COMPONENT_EXPORTS) {

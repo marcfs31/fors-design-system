@@ -23,14 +23,19 @@ import {
   CardHeader,
   CardTitle,
   Checkbox,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
   Heading,
   Input,
+  Label,
   Pagination,
   PaginationEllipsis,
   PaginationItem,
   Progress,
   RadioGroup,
   RadioGroupItem,
+  Separator,
   Skeleton,
   Slider,
   Spinner,
@@ -179,6 +184,15 @@ const cases: Record<string, React.ReactElement> = {
         </TableRow>
       </TableBody>
     </Table>
+  ),
+  "Separator/horizontal": <Separator />,
+  "Separator/vertical": <Separator orientation="vertical" />,
+  "Label/basic": <Label htmlFor="x">Workspace name</Label>,
+  "Collapsible/closed": (
+    <Collapsible>
+      <CollapsibleTrigger>Show more</CollapsibleTrigger>
+      <CollapsibleContent>Extra detail</CollapsibleContent>
+    </Collapsible>
   ),
 };
 

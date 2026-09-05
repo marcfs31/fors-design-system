@@ -35,15 +35,17 @@ export default defineConfig({
         "src/components/DropdownMenu.tsx",
         "src/components/Tooltip.tsx",
       ],
-      // Set a bit below the actual measured numbers (~99/90/87.5/99 as of
-      // v1.0.0) so this is a real regression gate — catching a wholesale
-      // untested addition or a broken branch — not a wall nobody's verified
-      // passes. Bump these up as coverage genuinely improves, never down.
+      // Set a bit below the actual measured numbers (~99.5/86.5/89/99.5 as of
+      // the Separator/Label/Collapsible addition) so this is a real
+      // regression gate — catching a wholesale untested addition or a broken
+      // branch — not a wall nobody's verified passes. Ratcheted up from the
+      // v1.0.0 baseline (95/95/85/80) as coverage genuinely improved; bump up
+      // again the same way, never down.
       thresholds: {
-        statements: 95,
-        lines: 95,
+        statements: 98,
+        lines: 98,
         branches: 85,
-        functions: 80,
+        functions: 85,
       },
     },
   },
