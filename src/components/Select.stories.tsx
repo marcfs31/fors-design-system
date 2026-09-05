@@ -10,7 +10,7 @@ type Story = StoryObj;
 export const Default: Story = {
   render: () => (
     <Select defaultValue="vercel">
-      <SelectTrigger className="w-56">
+      <SelectTrigger className="w-56" aria-label="Deploy target">
         <SelectValue placeholder="Choose a deploy target" />
       </SelectTrigger>
       <SelectContent>
@@ -26,7 +26,7 @@ export const Default: Story = {
 export const Placeholder: Story = {
   render: () => (
     <Select>
-      <SelectTrigger className="w-56">
+      <SelectTrigger className="w-56" aria-label="Region">
         <SelectValue placeholder="Select a region" />
       </SelectTrigger>
       <SelectContent>

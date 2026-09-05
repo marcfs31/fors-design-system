@@ -39,7 +39,7 @@ export const DARK_PALETTE: ForsPalette = {
   surface2: "#1a222b",
   fg: "#eaf0f5",
   fgSecondary: "#a7b4c0",
-  fgMuted: "#75818d",
+  fgMuted: "#8a95a1",
   accent: "#16c7b0",
   accentHover: "#3fdbc5",
   accentActive: "#10a090",

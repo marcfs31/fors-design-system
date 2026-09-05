@@ -7,13 +7,17 @@
  * malformed exports map, a styles.css that never got the Tailwind pass).
  * Run after `npm run build`, before anything gets published.
  */
+import { createRequire } from "node:module";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
+const require = createRequire(import.meta.url);
 const root = path.dirname(fileURLToPath(import.meta.url)) + "/..";
 const distIndex = path.join(root, "dist/index.js");
+const distCjs = path.join(root, "dist/index.cjs");
 const distTypes = path.join(root, "dist/index.d.ts");
+const distCts = path.join(root, "dist/index.d.cts");
 const distStyles = path.join(root, "dist/styles.css");
 
 let failures = 0;
@@ -30,11 +34,22 @@ function check(label, fn) {
 
 console.log("Smoke-testing dist/ artifact...\n");
 
-check("dist/index.js exists", () => existsSync(distIndex));
+check("dist/index.js exists (ESM)", () => existsSync(distIndex));
+check("dist/index.cjs exists (CJS)", () => existsSync(distCjs));
 check("dist/index.d.ts exists", () => existsSync(distTypes));
+check("dist/index.d.cts exists", () => existsSync(distCts));
 check("dist/styles.css exists", () => existsSync(distStyles));
 
 const mod = await import(path.resolve(distIndex));
+const cjs = require(path.resolve(distCjs));
+
+check("CJS build exposes the same exports as ESM", () => {
+  const esmKeys = Object.keys(mod).sort();
+  const cjsKeys = Object.keys(cjs).sort();
+  const missing = esmKeys.filter((k) => !cjsKeys.includes(k));
+  if (missing.length) throw new Error(`CJS missing: ${missing.join(", ")}`);
+  return true;
+});
 
 const EXPECTED_COMPONENT_EXPORTS = [
   "Button",

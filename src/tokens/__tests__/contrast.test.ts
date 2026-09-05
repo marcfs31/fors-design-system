@@ -35,7 +35,13 @@ function pairsFor(p: ForsPalette): Array<[string, string, string]> {
     ["fg on bg", p.fg, p.bg],
     ["fg on surface", p.fg, p.surface],
     ["fg-secondary on bg", p.fgSecondary, p.bg],
+    ["fg-secondary on surface", p.fgSecondary, p.surface],
+    ["fg-secondary on surface-2", p.fgSecondary, p.surface2],
+    // fg-muted is used on every ink surface (Table header on surface-2,
+    // captions on surface), not just bg — check all three.
     ["fg-muted on bg", p.fgMuted, p.bg],
+    ["fg-muted on surface", p.fgMuted, p.surface],
+    ["fg-muted on surface-2", p.fgMuted, p.surface2],
 
     ["accent-fg on accent", p.accentFg, p.accent],
     ["accent-fg on accent-hover", p.accentFg, p.accentHover],

@@ -4,6 +4,10 @@ import { Input } from "./Input";
 const meta: Meta<typeof Input> = {
   title: "Fors/Input",
   component: Input,
+  // A text field needs a programmatic label — a placeholder is not one.
+  // In app code, render a `<label htmlFor>` bound to the Input's `id`;
+  // these stories use `aria-label` to keep the examples compact.
+  args: { "aria-label": "Email" },
 };
 export default meta;
 type Story = StoryObj<typeof Input>;
@@ -13,7 +17,11 @@ export const Default: Story = {
 };
 
 export const WithHint: Story = {
-  args: { placeholder: "Workspace name", hint: "Visible to everyone in your organization." },
+  args: {
+    "aria-label": "Workspace name",
+    placeholder: "Workspace name",
+    hint: "Visible to everyone in your organization.",
+  },
 };
 
 export const Invalid: Story = {
@@ -27,5 +35,5 @@ export const Invalid: Story = {
 };
 
 export const Disabled: Story = {
-  args: { placeholder: "Locked field", disabled: true },
+  args: { "aria-label": "Locked field", placeholder: "Locked field", disabled: true },
 };

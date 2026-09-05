@@ -4,6 +4,10 @@ import { Switch } from "./Switch";
 const meta: Meta<typeof Switch> = {
   title: "Fors/Switch",
   component: Switch,
+  // Radix Switch renders a <button role="switch"> with no text — it always
+  // needs an accessible name: an `aria-label`, or a `<label htmlFor>` bound
+  // to its `id` (see the WithLabel story).
+  args: { "aria-label": "Preview deployments" },
 };
 export default meta;
 type Story = StoryObj<typeof Switch>;
