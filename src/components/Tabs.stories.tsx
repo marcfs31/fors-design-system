@@ -16,7 +16,9 @@ export const Default: Story = {
         <Tabs.Trigger value="settings">Settings</Tabs.Trigger>
       </Tabs.List>
       <Tabs.Panel value="overview">Project health, deploy status, and recent commits.</Tabs.Panel>
-      <Tabs.Panel value="activity">A chronological feed of team activity on this project.</Tabs.Panel>
+      <Tabs.Panel value="activity">
+        A chronological feed of team activity on this project.
+      </Tabs.Panel>
       <Tabs.Panel value="settings">Environment variables, domains, and integrations.</Tabs.Panel>
     </Tabs.Root>
   ),

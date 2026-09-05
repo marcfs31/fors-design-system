@@ -17,5 +17,9 @@ export const WithHint: Story = {
 };
 
 export const Invalid: Story = {
-  args: { placeholder: "Feedback", invalid: true, hint: "Feedback must be at least 20 characters." },
+  args: {
+    placeholder: "Feedback",
+    invalid: true,
+    hint: "Feedback must be at least 20 characters.",
+  },
 };

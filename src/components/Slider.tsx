@@ -2,8 +2,10 @@ import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { cn } from "../lib/cn";
 
-export interface SliderProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>, "aria-label"> {
+export interface SliderProps extends Omit<
+  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>,
+  "aria-label"
+> {
   /**
    * Accessible name for the thumb(s) — each Thumb is its own `role="slider"`
    * element, so this must land there, not on the invisible Root. A single

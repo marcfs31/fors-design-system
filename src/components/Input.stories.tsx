@@ -17,7 +17,13 @@ export const WithHint: Story = {
 };
 
 export const Invalid: Story = {
-  args: { placeholder: "you@example.com", value: "not-an-email", invalid: true, hint: "Enter a valid email address.", onChange: () => {} },
+  args: {
+    placeholder: "you@example.com",
+    value: "not-an-email",
+    invalid: true,
+    hint: "Enter a valid email address.",
+    onChange: () => {},
+  },
 };
 
 export const Disabled: Story = {

@@ -26,9 +26,13 @@ export const Unchecked: Story = {
 };
 
 export const Checked: Story = {
-  render: () => <LabeledCheckbox id="notify" label="Email me about deploy failures" defaultChecked />,
+  render: () => (
+    <LabeledCheckbox id="notify" label="Email me about deploy failures" defaultChecked />
+  ),
 };
 
 export const Disabled: Story = {
-  render: () => <LabeledCheckbox id="locked" label="Managed by your organization" disabled defaultChecked />,
+  render: () => (
+    <LabeledCheckbox id="locked" label="Managed by your organization" disabled defaultChecked />
+  ),
 };

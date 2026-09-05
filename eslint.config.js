@@ -1,6 +1,7 @@
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
+import prettierConfig from "eslint-config-prettier";
 
 export default tseslint.config(
   { ignores: ["dist", "storybook-static", "node_modules", ".storybook"] },
@@ -13,5 +14,17 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     },
-  }
+  },
+  {
+    // Plain Node scripts (the smoke test, any future release/CI scripts) —
+    // not part of the browser-facing component library, so they get Node's
+    // globals instead.
+    files: ["scripts/**/*.mjs"],
+    languageOptions: {
+      globals: { console: "readonly", process: "readonly" },
+    },
+  },
+  // Must stay last — disables ESLint stylistic rules that would otherwise
+  // fight Prettier's own formatting decisions.
+  prettierConfig
 );

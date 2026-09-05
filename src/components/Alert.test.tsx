@@ -16,7 +16,11 @@ describe("Alert", () => {
   });
 
   it("has no accessibility violations", async () => {
-    const { container } = render(<Alert variant="danger" title="Deploy failed">Check the build log.</Alert>);
+    const { container } = render(
+      <Alert variant="danger" title="Deploy failed">
+        Check the build log.
+      </Alert>
+    );
     expect(await axe(container)).toHaveNoViolations();
   });
 });

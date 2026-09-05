@@ -20,8 +20,7 @@ const headingVariants = cva("font-heading font-semibold text-fg", {
 type HeadingElement = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
 export interface HeadingProps
-  extends React.HTMLAttributes<HTMLHeadingElement>,
-    VariantProps<typeof headingVariants> {
+  extends React.HTMLAttributes<HTMLHeadingElement>, VariantProps<typeof headingVariants> {
   /** Semantic heading level. Defaults to `h2` — set explicitly to keep document outline correct. */
   as?: HeadingElement;
 }

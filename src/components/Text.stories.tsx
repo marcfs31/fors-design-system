@@ -9,9 +9,15 @@ export default meta;
 type Story = StoryObj<typeof Text>;
 
 export const Default: Story = { args: { children: "Deployed 3 minutes ago by Marc." } };
-export const Secondary: Story = { args: { tone: "secondary", children: "Last edited on March 4, 2026." } };
-export const Muted: Story = { args: { tone: "muted", size: "sm", children: "No activity in the last 30 days." } };
-export const Danger: Story = { args: { tone: "danger", size: "sm", children: "This action cannot be undone." } };
+export const Secondary: Story = {
+  args: { tone: "secondary", children: "Last edited on March 4, 2026." },
+};
+export const Muted: Story = {
+  args: { tone: "muted", size: "sm", children: "No activity in the last 30 days." },
+};
+export const Danger: Story = {
+  args: { tone: "danger", size: "sm", children: "This action cannot be undone." },
+};
 
 export const Tones: Story = {
   render: () => (

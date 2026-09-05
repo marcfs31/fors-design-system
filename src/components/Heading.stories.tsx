@@ -8,9 +8,13 @@ const meta: Meta<typeof Heading> = {
 export default meta;
 type Story = StoryObj<typeof Heading>;
 
-export const Page: Story = { args: { as: "h1", size: "2xl", children: "Build faster. Own it forever." } };
+export const Page: Story = {
+  args: { as: "h1", size: "2xl", children: "Build faster. Own it forever." },
+};
 export const Section: Story = { args: { as: "h2", size: "xl", children: "Recent deployments" } };
-export const Subsection: Story = { args: { as: "h3", size: "md", children: "Environment variables" } };
+export const Subsection: Story = {
+  args: { as: "h3", size: "md", children: "Environment variables" },
+};
 
 export const AllSizes: Story = {
   render: () => (

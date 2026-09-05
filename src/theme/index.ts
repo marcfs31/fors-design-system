@@ -9,7 +9,10 @@ export const FORS_THEMES = ["dark", "light"] as const;
 export type ForsTheme = (typeof FORS_THEMES)[number];
 
 /** Sets the `data-theme` attribute that every Fors token resolves against. */
-export function applyForsTheme(theme: ForsTheme, target: HTMLElement = document.documentElement): void {
+export function applyForsTheme(
+  theme: ForsTheme,
+  target: HTMLElement = document.documentElement
+): void {
   target.setAttribute("data-theme", theme);
 }
 

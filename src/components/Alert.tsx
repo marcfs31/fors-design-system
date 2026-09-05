@@ -18,8 +18,7 @@ const alertVariants = cva("rounded-md border p-4 font-sans text-sm", {
 });
 
 export interface AlertProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof alertVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof alertVariants> {
   /** Bold lead-in line above the body text. */
   title?: string;
 }

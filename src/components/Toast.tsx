@@ -35,21 +35,27 @@ export const ToastViewport = React.forwardRef<
 ToastViewport.displayName = "ToastViewport";
 
 export interface ToastRootProps
-  extends React.ComponentPropsWithoutRef<typeof ToastPrimitive.Root>,
+  extends
+    React.ComponentPropsWithoutRef<typeof ToastPrimitive.Root>,
     VariantProps<typeof toastVariants> {}
 
-export const ToastRoot = React.forwardRef<React.ElementRef<typeof ToastPrimitive.Root>, ToastRootProps>(
-  ({ className, variant, ...props }, ref) => (
-    <ToastPrimitive.Root ref={ref} className={cn(toastVariants({ variant }), className)} {...props} />
-  )
-);
+export const ToastRoot = React.forwardRef<
+  React.ElementRef<typeof ToastPrimitive.Root>,
+  ToastRootProps
+>(({ className, variant, ...props }, ref) => (
+  <ToastPrimitive.Root ref={ref} className={cn(toastVariants({ variant }), className)} {...props} />
+));
 ToastRoot.displayName = "ToastRoot";
 
 export const ToastTitle = React.forwardRef<
   React.ElementRef<typeof ToastPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitive.Title ref={ref} className={cn("font-sans text-sm font-semibold", className)} {...props} />
+  <ToastPrimitive.Title
+    ref={ref}
+    className={cn("font-sans text-sm font-semibold", className)}
+    {...props}
+  />
 ));
 ToastTitle.displayName = "ToastTitle";
 
@@ -57,7 +63,11 @@ export const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitive.Description ref={ref} className={cn("font-sans text-sm opacity-90", className)} {...props} />
+  <ToastPrimitive.Description
+    ref={ref}
+    className={cn("font-sans text-sm opacity-90", className)}
+    {...props}
+  />
 ));
 ToastDescription.displayName = "ToastDescription";
 
@@ -68,11 +78,19 @@ export const ToastClose = React.forwardRef<
   <ToastPrimitive.Close
     ref={ref}
     aria-label="Dismiss"
-    className={cn("absolute right-2 top-2 rounded-sm opacity-60 transition-opacity duration-base hover:opacity-100", className)}
+    className={cn(
+      "absolute right-2 top-2 rounded-sm opacity-60 transition-opacity duration-base hover:opacity-100",
+      className
+    )}
     {...props}
   >
     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-      <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path
+        d="M1 1L11 11M11 1L1 11"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
     </svg>
   </ToastPrimitive.Close>
 ));

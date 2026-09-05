@@ -20,7 +20,9 @@ export const Basic: Story = {
       <CardContent>Unlimited projects, custom branding, priority support.</CardContent>
       <CardFooter>
         <Button size="sm">Choose plan</Button>
-        <Button size="sm" variant="ghost">Compare</Button>
+        <Button size="sm" variant="ghost">
+          Compare
+        </Button>
       </CardFooter>
     </Card>
   ),

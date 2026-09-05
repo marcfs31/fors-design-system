@@ -32,7 +32,9 @@ export const Deployments: Story = {
             <TableCell className="text-fg-secondary">{d.branch}</TableCell>
             <TableCell>
               <Badge
-                variant={d.status === "success" ? "success" : d.status === "failed" ? "danger" : "warning"}
+                variant={
+                  d.status === "success" ? "success" : d.status === "failed" ? "danger" : "warning"
+                }
               >
                 {d.status}
               </Badge>

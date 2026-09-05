@@ -15,17 +15,20 @@ npm run storybook  # component playground at localhost:6006
 ```bash
 npm run typecheck
 npm run lint
-npm run test:coverage   # coverage thresholds are enforced — see vitest.config.ts
+npm run format:check     # npm run format to auto-fix
+npm run test:coverage    # coverage thresholds are enforced — see vitest.config.ts
 npm run build
 npm run build-storybook
-npm run size             # bundle-size budget — see the "size-limit" field in package.json
+npm run size              # bundle-size budget — see the "size-limit" field in package.json
 ```
+
 All of these run in CI; failing any of them blocks merge.
 
 ## Adding or changing a component
 
 Every component needs, at minimum:
-- `Name.tsx` — `React.forwardRef`, variants via `class-variance-authority` where applicable, and JSDoc on the exported component describing *when* to use each variant (this becomes both the Storybook description and, eventually, the design-agent-facing docs when this repo is synced to claude.ai/design).
+
+- `Name.tsx` — `React.forwardRef`, variants via `class-variance-authority` where applicable, and JSDoc on the exported component describing _when_ to use each variant (this becomes both the Storybook description and, eventually, the design-agent-facing docs when this repo is synced to claude.ai/design).
 - `Name.stories.tsx` — 2–5 named-export stories with realistic content (not `foo`/`bar`).
 - `Name.test.tsx` — behavior tests (render, interaction) plus an accessibility check:
   ```tsx

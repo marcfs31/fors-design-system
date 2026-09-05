@@ -45,7 +45,13 @@ export const AccordionTrigger = React.forwardRef<
         aria-hidden="true"
         className="ml-2 shrink-0 text-fg-muted transition-transform duration-base"
       >
-        <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d="M3 4.5L6 7.5L9 4.5"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>

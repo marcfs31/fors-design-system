@@ -14,8 +14,7 @@ const spinnerVariants = cva("animate-spin text-current", {
 });
 
 export interface SpinnerProps
-  extends React.SVGAttributes<SVGSVGElement>,
-    VariantProps<typeof spinnerVariants> {
+  extends React.SVGAttributes<SVGSVGElement>, VariantProps<typeof spinnerVariants> {
   /** Accessible label — spinners carry no visible text, so this is required for screen readers. */
   label?: string;
 }
@@ -36,7 +35,12 @@ export const Spinner = React.forwardRef<SVGSVGElement, SpinnerProps>(
       {...props}
     >
       <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
-      <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      <path
+        d="M22 12a10 10 0 0 0-10-10"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
     </svg>
   )
 );

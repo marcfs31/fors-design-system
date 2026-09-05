@@ -29,8 +29,7 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   /** Icon or spinner rendered before the label. Ignored while `loading` (a Spinner takes its place). */
   leadingIcon?: React.ReactNode;
   /** Shows a spinner in place of `leadingIcon` and disables the button — for an in-flight async action. */

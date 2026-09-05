@@ -81,9 +81,7 @@ export interface TabsPanelProps extends React.HTMLAttributes<HTMLDivElement> {
 function Panel({ className, value, ...props }: TabsPanelProps) {
   const { value: active } = useTabsContext();
   if (active !== value) return null;
-  return (
-    <div role="tabpanel" className={cn("font-sans text-sm text-fg", className)} {...props} />
-  );
+  return <div role="tabpanel" className={cn("font-sans text-sm text-fg", className)} {...props} />;
 }
 
 /**

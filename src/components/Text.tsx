@@ -31,8 +31,7 @@ const textVariants = cva("font-sans", {
 });
 
 export interface TextProps
-  extends React.HTMLAttributes<HTMLParagraphElement>,
-    VariantProps<typeof textVariants> {
+  extends React.HTMLAttributes<HTMLParagraphElement>, VariantProps<typeof textVariants> {
   /** Render as a different element — e.g. `"span"` for inline text. Defaults to `p`. */
   as?: "p" | "span" | "div" | "label";
 }

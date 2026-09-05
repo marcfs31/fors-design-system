@@ -34,8 +34,9 @@ export const DropdownMenuContent = React.forwardRef<
 ));
 DropdownMenuContent.displayName = "DropdownMenuContent";
 
-export interface DropdownMenuItemProps
-  extends React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item> {
+export interface DropdownMenuItemProps extends React.ComponentPropsWithoutRef<
+  typeof DropdownMenuPrimitive.Item
+> {
   /** Renders the item in danger styling for destructive actions. */
   variant?: "default" | "danger";
 }
@@ -48,7 +49,9 @@ export const DropdownMenuItem = React.forwardRef<
     ref={ref}
     className={cn(
       "flex cursor-pointer select-none items-center rounded-sm px-2.5 py-1.5 text-sm font-sans outline-none",
-      variant === "danger" ? "text-danger data-[highlighted]:bg-danger-subtle" : "text-fg data-[highlighted]:bg-ink-surface-2",
+      variant === "danger"
+        ? "text-danger data-[highlighted]:bg-danger-subtle"
+        : "text-fg data-[highlighted]:bg-ink-surface-2",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
@@ -61,6 +64,10 @@ export const DropdownMenuSeparator = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>
 >(({ className, ...props }, ref) => (
-  <DropdownMenuPrimitive.Separator ref={ref} className={cn("my-1 h-px bg-ink-border", className)} {...props} />
+  <DropdownMenuPrimitive.Separator
+    ref={ref}
+    className={cn("my-1 h-px bg-ink-border", className)}
+    {...props}
+  />
 ));
 DropdownMenuSeparator.displayName = "DropdownMenuSeparator";

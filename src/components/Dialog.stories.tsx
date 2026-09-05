@@ -29,7 +29,8 @@ export const Confirmation: Story = {
           <DialogHeader>
             <DialogTitle>Delete this project?</DialogTitle>
             <DialogDescription>
-              This permanently removes the project, its deployments, and its environment variables. This cannot be undone.
+              This permanently removes the project, its deployments, and its environment variables.
+              This cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      radix:
+        patterns:
+          - "@radix-ui/*"
+      storybook:
+        patterns:
+          - "@storybook/*"
+          - "storybook"
+    ignore:
+      # Major bumps for these need a deliberate migration pass (breaking
+      # config/API changes), not an automated PR — patch/minor still flow through.
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "vite"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

@@ -46,12 +46,7 @@ export {
   DropdownMenuSeparator,
   type DropdownMenuItemProps,
 } from "./components/DropdownMenu";
-export {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "./components/Tooltip";
+export { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "./components/Tooltip";
 export {
   ToastProvider,
   ToastViewport,
@@ -66,21 +61,9 @@ export {
   type ToastRootProps,
 } from "./components/Toast";
 export { Spinner, type SpinnerProps } from "./components/Spinner";
-export {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "./components/Table";
+export { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "./components/Table";
 export { Progress, type ProgressProps } from "./components/Progress";
-export {
-  Popover,
-  PopoverTrigger,
-  PopoverAnchor,
-  PopoverContent,
-} from "./components/Popover";
+export { Popover, PopoverTrigger, PopoverAnchor, PopoverContent } from "./components/Popover";
 export {
   Accordion,
   AccordionItem,
@@ -105,5 +88,11 @@ export {
 } from "./components/Pagination";
 
 export { cn } from "./lib/cn";
-export { FORS_THEMES, applyForsTheme, forsAntiFlashScript, type ForsTheme, type ForsAntiFlashOptions } from "./theme";
+export {
+  FORS_THEMES,
+  applyForsTheme,
+  forsAntiFlashScript,
+  type ForsTheme,
+  type ForsAntiFlashOptions,
+} from "./theme";
 export { FORS_PALETTES, DARK_PALETTE, LIGHT_PALETTE, type ForsPalette } from "./tokens/palettes";

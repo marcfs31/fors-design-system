@@ -13,7 +13,9 @@ describe("Textarea", () => {
   });
 
   it("marks itself invalid and shows the hint", () => {
-    render(<Textarea placeholder="Feedback" invalid hint="Must be at least 20 characters." readOnly />);
+    render(
+      <Textarea placeholder="Feedback" invalid hint="Must be at least 20 characters." readOnly />
+    );
     expect(screen.getByPlaceholderText("Feedback")).toHaveAttribute("aria-invalid", "true");
     expect(screen.getByText("Must be at least 20 characters.")).toBeInTheDocument();
   });
