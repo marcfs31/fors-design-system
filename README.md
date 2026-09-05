@@ -1,6 +1,11 @@
 # Fors Design System
 
+[![CI](https://github.com/marcfs31/fors-design-system/actions/workflows/ci.yml/badge.svg)](https://github.com/marcfs31/fors-design-system/actions/workflows/ci.yml)
+[![Storybook](https://img.shields.io/badge/Storybook-live-16C7B0)](https://marcfs31.github.io/fors-design-system/)
+
 The design system behind Fors Corporation's software: brand tokens and a React component library shared across every custom client app and in-house product Fors builds, so nothing starts from a blank Tailwind config again.
+
+**[Browse the component library →](https://marcfs31.github.io/fors-design-system/)** (Storybook, deployed from `main`)
 
 **Brand concept.** "Fors" is Swedish/Norwegian for rapids — force, flow, clarity, momentum. The palette is dark-first and engineering-forward: near-black ink surfaces, a signature Rapids Teal accent, a Spark Amber secondary, Inter for body/UI text, Space Grotesk for headings. A light theme is included for apps that need it — see [Theming](#theming) below.
 

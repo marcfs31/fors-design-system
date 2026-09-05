@@ -1,0 +1,21 @@
+name: Component / feature request
+description: A new component, variant, prop, or token
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What do you need and why
+      description: The product problem, not just the proposed API.
+    validations:
+      required: true
+  - type: textarea
+    id: prior-art
+    attributes:
+      label: Prior art
+      description: How Radix / other design systems handle this, if relevant.
+  - type: textarea
+    id: api
+    attributes:
+      label: Proposed API sketch
+      render: tsx

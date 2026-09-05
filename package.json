@@ -32,6 +32,10 @@
     "type": "git",
     "url": "git+https://github.com/marcfs31/fors-design-system.git"
   },
+  "homepage": "https://marcfs31.github.io/fors-design-system/",
+  "bugs": {
+    "url": "https://github.com/marcfs31/fors-design-system/issues"
+  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com",
     "access": "restricted"

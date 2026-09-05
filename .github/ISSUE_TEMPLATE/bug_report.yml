@@ -1,0 +1,41 @@
+name: Bug report
+description: A component or token behaves incorrectly
+labels: [bug]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Component / token
+      placeholder: e.g. Tabs, --fors-accent
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected vs. what happened
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: A minimal snippet, or a link to the Storybook story and the steps.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: "@marcfs31/design-system version"
+      placeholder: e.g. 1.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Theme
+      options: [dark, light, both]
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: e.g. Next.js 15, React 18, Chrome 128

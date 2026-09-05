@@ -1,10 +1,10 @@
 # Security Policy
 
-This is a private, unpublished-to-the-public-registry package (`@marcfs31/design-system`, distributed via GitHub Packages to Fors Corporation's own repos) — there is no public user base to notify via an advisory.
+The **source** of this project is public. The **package** (`@marcfs31/design-system`) is not — it's published to GitHub Packages with `restricted` access and installed only by Fors Corporation's own repos, so there is no broad public consumer base.
 
 ## Reporting a vulnerability
 
-If you find a security issue in this package (e.g. an XSS vector in a component, a dependency with a known CVE), open a private security advisory on this repository, or contact the maintainer directly rather than filing a public issue.
+If you find a security issue in this project (e.g. an XSS vector in a component, a dependency with a known CVE), open a private security advisory on this repository ("Security" → "Report a vulnerability") or contact the maintainer directly rather than filing a public issue.
 
 ## Dependencies
 
