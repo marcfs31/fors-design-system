@@ -175,8 +175,11 @@ function KitchenSink() {
                       const hex = (DARK_PALETTE as unknown as Record<string, string>)[k];
                       return (
                         <div key={k} className="flex flex-col gap-1">
+                          {/* border-2 in the mid-tone fg-muted stays visible on both
+                              near-black and near-white pages, so a swatch whose colour
+                              is close to the page background still shows its extent. */}
                           <div
-                            className="h-12 w-20 rounded-md border border-ink-border sm:w-24"
+                            className="h-12 w-20 rounded-md border-2 border-fg-muted shadow-sm sm:w-24"
                             style={{ background: hex }}
                             title={`${k} · ${hex}`}
                           />
@@ -241,7 +244,7 @@ function KitchenSink() {
 
           <Section id="ov-controls" title="Interactive settings form">
             <form
-              className="grid gap-5 sm:grid-cols-2"
+              className="grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(18rem,1fr))]"
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSave();
@@ -277,7 +280,7 @@ function KitchenSink() {
                 </Select>
               </div>
 
-              <div className="flex flex-col gap-1.5 sm:col-span-2">
+              <div className="flex flex-col gap-1.5 [grid-column:1/-1]">
                 <label htmlFor="ov-notes" className="font-sans text-sm font-medium text-fg">
                   Deployment notes
                 </label>
@@ -308,7 +311,7 @@ function KitchenSink() {
                 />
               </div>
 
-              <div className="flex items-center gap-3 sm:col-span-2">
+              <div className="flex items-center gap-3 [grid-column:1/-1]">
                 <Button type="submit" loading={saving} disabled={emailInvalid}>
                   {saving ? "Saving…" : "Save settings"}
                 </Button>
@@ -434,7 +437,7 @@ function KitchenSink() {
           </Section>
 
           <Section id="ov-data" title="Data &amp; layout">
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))]">
               <Card>
                 <CardHeader>
                   <CardTitle>Rapids plan</CardTitle>

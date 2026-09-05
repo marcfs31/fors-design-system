@@ -7,13 +7,12 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
     globals: false,
-    // Radix's overlay/positioning components (DropdownMenu, Tooltip) run
-    // real focus-scope/portal/floating-ui measurement under jsdom, which has
-    // no real layout engine — measured up to ~25s for the slowest case
-    // (Tooltip + axe) even without coverage, and up to ~55s for that same
-    // case *with* v8 coverage instrumentation's added overhead (measured in
-    // isolation, not CPU contention) — genuinely correct, not hung.
-    testTimeout: 90000,
+    // Radix overlay tests still open a portal + run focus-scope/floating-ui
+    // logic under jsdom (no layout engine), which is slow-ish on a loaded CI
+    // runner. The pathological case — `axe` on an *open* overlay, which ran
+    // for minutes — has been moved to the Storybook test runner (real
+    // Chromium); what's left here is structural and comfortably under 60s.
+    testTimeout: 60000,
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "json-summary"],
@@ -25,6 +24,15 @@ export default defineConfig({
         "src/test-types.d.ts",
         "src/test-utils/**",
         "src/index.ts",
+        // Floating (Popper) overlays can't be rendered open under jsdom at a
+        // usable speed, so their render bodies have no jsdom test to cover
+        // them. They ARE fully exercised (render + open/close + axe) by the
+        // Storybook test runner in real Chromium — a coverage tool v8 can't
+        // see. Excluded here so the 95% bar stays meaningful for the ~24
+        // components jsdom covers properly.
+        "src/components/Popover.tsx",
+        "src/components/DropdownMenu.tsx",
+        "src/components/Tooltip.tsx",
       ],
       // Set a bit below the actual measured numbers (~99/90/87.5/99 as of
       // v1.0.0) so this is a real regression gate — catching a wholesale

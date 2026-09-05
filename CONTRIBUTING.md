@@ -65,7 +65,7 @@ Every component needs, at minimum:
 
 Overlay or positioned components (anything opening on click/hover — dialogs, menus, tooltips, popovers) should be built on a Radix UI primitive rather than hand-rolled — see any existing overlay component (`Dialog.tsx`, `Popover.tsx`) for the pattern: unstyled Radix primitive + this repo's Tailwind token classes + `POPPER_ANIMATION_CLASSES` from `src/lib/animation.ts` for open/close motion.
 
-**A note on testing overlay components under jsdom**: Radix's click-to-open gesture depends on real pointer-capture semantics jsdom doesn't implement, which makes click-driven interaction tests flaky. Test these with keyboard interaction (`.focus()` + `userEvent.keyboard("{Enter}")`) instead — see `DropdownMenu.test.tsx` or `Popover.test.tsx` for the pattern. These tests are also genuinely slower than a plain component (jsdom has no real layout engine, so Radix's positioning math takes real wall-clock time) — that's accounted for in `vitest.config.ts`'s `testTimeout`, not a bug to chase.
+**Testing overlay components (Dialog, DropdownMenu, Popover, Tooltip, Select):** keep jsdom tests **structural and fast** — render with `defaultOpen` and assert roles / props / classes. Do **not** run `axe()` on an _open_ overlay in jsdom: with no layout engine it takes minutes and times out on CI. Open-state accessibility and real open/close interaction are covered by the Storybook test runner in real Chromium (`npm run test:storybook`) via the component's stories and `play` functions. `axe()` in a `*.test.tsx` is for **inline** components. See `.claude/skills/testing`.
 
 ## Versioning
 

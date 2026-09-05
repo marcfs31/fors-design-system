@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, screen } from "@storybook/test";
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "./Tooltip";
 import { Button } from "./Button";
 
@@ -22,4 +23,9 @@ export const Default: Story = {
       </TooltipProvider>
     </div>
   ),
+  play: async () => {
+    // Radix renders the visible tip plus a visually-hidden copy for SR — both count.
+    const tips = await screen.findAllByText("Rebuilds from the last successful commit");
+    await expect(tips.length).toBeGreaterThan(0);
+  },
 };

@@ -1,4 +1,6 @@
+import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import { expect, screen, userEvent, within } from "@storybook/test";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -19,8 +21,8 @@ export const ProjectActions: Story = {
   // Shown open for visual review. Radix correctly sets `aria-hidden` on the
   // rest of the page (incl. #storybook-root) while a menu is open, which
   // axe's `aria-hidden-focus` rule flags as a static-snapshot false positive
-  // against that focus-trap pattern — open-menu a11y is covered in
-  // DropdownMenu.test.tsx instead.
+  // against that focus-trap pattern — the KeyboardSelect play test below
+  // exercises the open menu properly.
   parameters: { a11y: { options: { rules: { "aria-hidden-focus": { enabled: false } } } } },
   render: () => (
     <div className="flex h-64 items-start justify-center pt-12">
@@ -40,4 +42,42 @@ export const ProjectActions: Story = {
       </DropdownMenu>
     </div>
   ),
+  play: async () => {
+    const menu = await screen.findByRole("menu");
+    await expect(menu).toHaveClass("max-w-[calc(100vw-2rem)]");
+  },
+};
+
+function KeyboardMenu() {
+  const [picked, setPicked] = React.useState("");
+  return (
+    <div className="flex h-64 flex-col items-center gap-3 pt-12">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost">Actions</Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onSelect={() => setPicked("rename")}>Rename</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setPicked("duplicate")}>Duplicate</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <output data-testid="picked">{picked}</output>
+    </div>
+  );
+}
+
+/**
+ * Real-browser interaction: opens on Enter from the trigger, moves with
+ * ArrowDown, fires `onSelect` on Enter.
+ */
+export const KeyboardSelect: Story = {
+  render: () => <KeyboardMenu />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    canvas.getByRole("button", { name: "Actions" }).focus();
+    await userEvent.keyboard("{Enter}");
+    await screen.findByRole("menuitem", { name: "Rename" });
+    await userEvent.keyboard("{ArrowDown}{Enter}");
+    await expect(canvas.getByTestId("picked")).toHaveTextContent("duplicate");
+  },
 };
