@@ -17,6 +17,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, invalid, hint, id, ...props }, ref) => {
     const generatedId = React.useId();
     const inputId = id ?? generatedId;
+    const hintId = React.useId();
     return (
       <div className="flex flex-col gap-1.5">
         <input
@@ -32,10 +33,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             className
           )}
           aria-invalid={invalid || undefined}
+          aria-describedby={hint ? hintId : undefined}
           {...props}
         />
         {hint && (
-          <span className={cn("text-xs font-sans", invalid ? "text-danger" : "text-fg-muted")}>
+          <span
+            id={hintId}
+            className={cn("text-xs font-sans", invalid ? "text-danger" : "text-fg-muted")}
+          >
             {hint}
           </span>
         )}

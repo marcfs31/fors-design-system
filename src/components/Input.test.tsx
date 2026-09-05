@@ -18,6 +18,20 @@ describe("Input", () => {
     expect(screen.getByText("Enter a valid email.")).toBeInTheDocument();
   });
 
+  it("links hint text to input via aria-describedby", () => {
+    render(<Input placeholder="Email" hint="Enter a valid email." />);
+    const input = screen.getByPlaceholderText("Email");
+    const hintText = screen.getByText("Enter a valid email.");
+    const hintId = hintText.id;
+    expect(hintId).toBeTruthy();
+    expect(input).toHaveAttribute("aria-describedby", hintId);
+  });
+
+  it("does not set aria-describedby when hint is absent", () => {
+    render(<Input placeholder="Email" />);
+    expect(screen.getByPlaceholderText("Email")).not.toHaveAttribute("aria-describedby");
+  });
+
   it("has no accessibility violations", async () => {
     const { container } = render(<Input placeholder="Email" aria-label="Email" />);
     expect(await axe(container)).toHaveNoViolations();

@@ -1,0 +1,547 @@
+import * as React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Button } from "./components/Button";
+import { Badge } from "./components/Badge";
+import { Input } from "./components/Input";
+import { Textarea } from "./components/Textarea";
+import { Checkbox } from "./components/Checkbox";
+import { Switch } from "./components/Switch";
+import { Slider } from "./components/Slider";
+import { Progress } from "./components/Progress";
+import { Skeleton } from "./components/Skeleton";
+import { Spinner } from "./components/Spinner";
+import { Alert } from "./components/Alert";
+import { Avatar, AvatarGroup } from "./components/Avatar";
+import { Heading } from "./components/Heading";
+import { Text } from "./components/Text";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "./components/Card";
+import { Tabs } from "./components/Tabs";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "./components/Accordion";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./components/Select";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "./components/Table";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "./components/Dialog";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "./components/DropdownMenu";
+import { Popover, PopoverTrigger, PopoverContent } from "./components/Popover";
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "./components/Tooltip";
+import { Toaster, toast } from "./components/Toast";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "./components/Breadcrumb";
+import { Pagination, PaginationItem, PaginationEllipsis } from "./components/Pagination";
+import { DARK_PALETTE, LIGHT_PALETTE } from "./tokens/palettes";
+
+const meta: Meta = {
+  title: "Fors/Overview",
+  parameters: { layout: "fullscreen" },
+};
+export default meta;
+type Story = StoryObj;
+
+function Section({
+  id,
+  title,
+  children,
+}: {
+  id: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section aria-labelledby={id} className="flex flex-col gap-5">
+      <Heading id={id} as="h2" size="sm" className="text-fg-secondary">
+        {title}
+      </Heading>
+      {children}
+    </section>
+  );
+}
+
+function Row({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-wrap items-center gap-3">{children}</div>;
+}
+
+const swatchGroups: { label: string; keys: string[] }[] = [
+  { label: "Ink", keys: ["bg", "surface", "surface2"] },
+  {
+    label: "Accent — Rapids Teal",
+    keys: ["accent", "accentHover", "accentActive", "accentSubtle"],
+  },
+  { label: "Spark — Amber", keys: ["spark", "sparkHover", "sparkSubtle"] },
+  { label: "Semantic", keys: ["danger", "success", "warning"] },
+];
+
+const deployments = [
+  { id: "dpl_a1", branch: "main", status: "Ready", env: "Production", when: "2m ago" },
+  { id: "dpl_b2", branch: "feat/onboarding", status: "Building", env: "Preview", when: "just now" },
+  { id: "dpl_c3", branch: "fix/nav-focus", status: "Error", env: "Preview", when: "14m ago" },
+];
+
+const statusVariant: Record<string, "success" | "warning" | "danger"> = {
+  Ready: "success",
+  Building: "warning",
+  Error: "danger",
+};
+
+function KitchenSink() {
+  const [email, setEmail] = React.useState("marc@forscorp.com");
+  const [plan, setPlan] = React.useState("rapids");
+  const [notify, setNotify] = React.useState(true);
+  const [previews, setPreviews] = React.useState(true);
+  const [concurrency, setConcurrency] = React.useState(40);
+  const [saving, setSaving] = React.useState(false);
+
+  const emailInvalid = !email.includes("@");
+
+  function handleSave() {
+    if (emailInvalid) return;
+    setSaving(true);
+    window.setTimeout(() => {
+      setSaving(false);
+      toast({
+        variant: "success",
+        title: "Settings saved",
+        description: `${plan} plan · previews ${previews ? "on" : "off"} · limit ${concurrency}`,
+      });
+    }, 800);
+  }
+
+  return (
+    <TooltipProvider delayDuration={200}>
+      <main className="min-h-screen bg-ink-bg p-4 sm:p-8 lg:p-10">
+        <div className="mx-auto flex max-w-5xl flex-col gap-14 sm:gap-16">
+          <header className="flex flex-col gap-2">
+            <Heading as="h1" size="2xl">
+              Fors Design System
+            </Heading>
+            <Text tone="secondary">
+              Rapids Teal on near-black ink · Space Grotesk + Inter · 30 components, dark &amp;
+              light, responsive, WCAG&nbsp;AA
+            </Text>
+          </header>
+
+          <Section id="ov-color" title="Color tokens (dark palette shown)">
+            <div className="flex flex-col gap-4">
+              {swatchGroups.map((group) => (
+                <div key={group.label} className="flex flex-col gap-1.5">
+                  <Text size="sm" tone="muted">
+                    {group.label}
+                  </Text>
+                  <div className="flex flex-wrap gap-2">
+                    {group.keys.map((k) => {
+                      const hex = (DARK_PALETTE as unknown as Record<string, string>)[k];
+                      return (
+                        <div key={k} className="flex flex-col gap-1">
+                          <div
+                            className="h-12 w-20 rounded-md border border-ink-border sm:w-24"
+                            style={{ background: hex }}
+                            title={`${k} · ${hex}`}
+                          />
+                          <Text size="xs" tone="muted" className="font-mono">
+                            {k}
+                          </Text>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Section>
+
+          <Section id="ov-type" title="Typography">
+            <div className="flex flex-col gap-1">
+              <p className="font-heading text-3xl font-semibold text-fg sm:text-4xl">
+                Build faster. Own it forever.
+              </p>
+              <p className="font-heading text-xl font-semibold text-fg">
+                Section heading — Space Grotesk
+              </p>
+              <Text>
+                Body copy is Inter at a comfortable reading size. The quick brown fox jumps over the
+                lazy dog.
+              </Text>
+              <Text tone="secondary">Secondary text for supporting detail.</Text>
+              <Text tone="muted" size="sm">
+                Muted caption text.
+              </Text>
+            </div>
+          </Section>
+
+          <Section id="ov-buttons" title="Buttons">
+            <Row>
+              <Button variant="primary">Primary</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="spark">Spark</Button>
+              <Button variant="ghost">Ghost</Button>
+              <Button variant="danger">Danger</Button>
+              <Button loading>Loading</Button>
+              <Button disabled>Disabled</Button>
+            </Row>
+            <Row>
+              <Button size="sm">Small</Button>
+              <Button size="md">Medium</Button>
+              <Button size="lg">Large</Button>
+            </Row>
+          </Section>
+
+          <Section id="ov-badges" title="Badges">
+            <Row>
+              <Badge>Draft</Badge>
+              <Badge variant="accent">New</Badge>
+              <Badge variant="spark">Featured</Badge>
+              <Badge variant="success">Shipped</Badge>
+              <Badge variant="warning">Pending review</Badge>
+              <Badge variant="danger">Failed</Badge>
+            </Row>
+          </Section>
+
+          <Section id="ov-controls" title="Interactive settings form">
+            <form
+              className="grid gap-5 sm:grid-cols-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSave();
+              }}
+            >
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="ov-email" className="font-sans text-sm font-medium text-fg">
+                  Billing email
+                </label>
+                <Input
+                  id="ov-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  invalid={emailInvalid}
+                  hint={emailInvalid ? "Enter a valid email address." : undefined}
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="ov-plan" className="font-sans text-sm font-medium text-fg">
+                  Plan
+                </label>
+                <Select value={plan} onValueChange={setPlan}>
+                  <SelectTrigger id="ov-plan">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="starter">Starter</SelectItem>
+                    <SelectItem value="rapids">Rapids</SelectItem>
+                    <SelectItem value="enterprise">Enterprise</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-1.5 sm:col-span-2">
+                <label htmlFor="ov-notes" className="font-sans text-sm font-medium text-fg">
+                  Deployment notes
+                </label>
+                <Textarea id="ov-notes" placeholder="Optional context for your team…" rows={2} />
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <label className="flex items-center gap-2">
+                  <Checkbox checked={notify} onCheckedChange={(v) => setNotify(v === true)} />
+                  <Text size="sm">Email me about deploy failures</Text>
+                </label>
+                <label className="flex items-center gap-2">
+                  <Switch checked={previews} onCheckedChange={setPreviews} />
+                  <Text size="sm">Enable preview deployments</Text>
+                </label>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <label htmlFor="ov-conc" className="font-sans text-sm text-fg-muted">
+                  Concurrency limit: {concurrency}
+                </label>
+                <Slider
+                  id="ov-conc"
+                  value={[concurrency]}
+                  onValueChange={([v]) => setConcurrency(v)}
+                  max={100}
+                  aria-label="Concurrency limit"
+                />
+              </div>
+
+              <div className="flex items-center gap-3 sm:col-span-2">
+                <Button type="submit" loading={saving} disabled={emailInvalid}>
+                  {saving ? "Saving…" : "Save settings"}
+                </Button>
+                <Text size="sm" tone="muted">
+                  Submits with a real loading state, then fires a toast.
+                </Text>
+              </div>
+            </form>
+          </Section>
+
+          <Section id="ov-overlays" title="Overlays">
+            <Row>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="danger">Delete project…</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Delete this project?</DialogTitle>
+                    <DialogDescription>
+                      This removes the project, its deployments, and its environment variables. This
+                      cannot be undone.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="secondary">Cancel</Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                      <Button variant="danger">Delete</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="secondary">Row actions</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>Redeploy</DropdownMenuItem>
+                  <DropdownMenuItem>Copy URL</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem variant="danger">Delete</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="secondary">Filter</Button>
+                </PopoverTrigger>
+                <PopoverContent aria-label="Filter deployments">
+                  <div className="flex flex-col gap-3">
+                    <label className="flex items-center gap-2">
+                      <Checkbox defaultChecked /> <Text size="sm">Production</Text>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <Checkbox defaultChecked /> <Text size="sm">Preview</Text>
+                    </label>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" aria-label="Help">
+                    ?
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Deploys trigger on every push to a connected branch.
+                </TooltipContent>
+              </Tooltip>
+
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  toast({ title: "Redeploy queued", description: "main → Production" })
+                }
+              >
+                Fire a toast
+              </Button>
+            </Row>
+          </Section>
+
+          <Section id="ov-feedback" title="Feedback &amp; status">
+            <div className="flex flex-col gap-3">
+              <Alert variant="accent" title="Heads up">
+                A new region is available for deployments.
+              </Alert>
+              <Alert variant="success" title="Deployed">
+                fors-client-portal is live in production.
+              </Alert>
+              <Alert variant="danger" title="Build failed">
+                Type error in <code className="font-mono">src/routes/api.ts</code>.
+              </Alert>
+              <Row>
+                <div className="min-w-0 flex-1">
+                  <Progress value={68} aria-label="Upload progress" />
+                </div>
+                <Spinner label="Loading" />
+              </Row>
+              <Row>
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <Skeleton className="h-3 w-40" />
+                <Skeleton className="h-3 w-24" />
+              </Row>
+            </div>
+          </Section>
+
+          <Section id="ov-people" title="People">
+            <Row>
+              <Avatar initials="MF" alt="Marc Fors" />
+              <Avatar initials="JD" alt="Jamie Doe" size="lg" />
+              <AvatarGroup max={3}>
+                <Avatar initials="MF" alt="Marc Fors" />
+                <Avatar initials="JD" alt="Jamie Doe" />
+                <Avatar initials="AK" alt="Alex Kim" />
+                <Avatar initials="RL" alt="Robin Lee" />
+                <Avatar initials="SP" alt="Sam Park" />
+              </AvatarGroup>
+            </Row>
+          </Section>
+
+          <Section id="ov-data" title="Data &amp; layout">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Rapids plan</CardTitle>
+                  <CardDescription>For teams shipping client work every week.</CardDescription>
+                </CardHeader>
+                <CardContent>Unlimited projects, custom branding, priority support.</CardContent>
+                <CardFooter>
+                  <Button size="sm">Choose plan</Button>
+                  <Button size="sm" variant="ghost">
+                    Compare
+                  </Button>
+                </CardFooter>
+              </Card>
+              <Card>
+                <Tabs.Root defaultValue="overview">
+                  <Tabs.List>
+                    <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+                    <Tabs.Trigger value="activity">Activity</Tabs.Trigger>
+                    <Tabs.Trigger value="settings">Settings</Tabs.Trigger>
+                  </Tabs.List>
+                  <Tabs.Panel value="overview" className="pt-3">
+                    Deployment health, traffic, and error rate at a glance.
+                  </Tabs.Panel>
+                  <Tabs.Panel value="activity" className="pt-3">
+                    Recent deploys and rollbacks.
+                  </Tabs.Panel>
+                  <Tabs.Panel value="settings" className="pt-3">
+                    Environment variables and access.
+                  </Tabs.Panel>
+                </Tabs.Root>
+              </Card>
+            </div>
+
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Branch</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Environment</TableHead>
+                  <TableHead>Deployed</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {deployments.map((d) => (
+                  <TableRow key={d.id}>
+                    <TableCell className="font-mono">{d.branch}</TableCell>
+                    <TableCell>
+                      <Badge variant={statusVariant[d.status]}>{d.status}</Badge>
+                    </TableCell>
+                    <TableCell>{d.env}</TableCell>
+                    <TableCell>{d.when}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+            <Accordion
+              type="single"
+              collapsible
+              defaultValue="a"
+              className="rounded-lg border border-ink-border px-4"
+            >
+              <AccordionItem value="a">
+                <AccordionTrigger>How does billing work?</AccordionTrigger>
+                <AccordionContent>
+                  Billed monthly by plan. Upgrades apply immediately; downgrades next cycle.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="b">
+                <AccordionTrigger>Can I cancel anytime?</AccordionTrigger>
+                <AccordionContent>Yes — you keep access until the period ends.</AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </Section>
+
+          <Section id="ov-nav" title="Navigation">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="#ov-nav">Projects</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="#ov-nav">fors-client-portal</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Settings</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+            <Pagination>
+              <Button variant="ghost" size="sm">
+                Prev
+              </Button>
+              <PaginationItem active>1</PaginationItem>
+              <PaginationItem>2</PaginationItem>
+              <PaginationItem>3</PaginationItem>
+              <PaginationEllipsis />
+              <PaginationItem>12</PaginationItem>
+              <Button variant="ghost" size="sm">
+                Next
+              </Button>
+            </Pagination>
+          </Section>
+
+          <footer className="border-t border-ink-border pt-4">
+            <Text size="sm" tone="muted">
+              {Object.keys(LIGHT_PALETTE).length} tokens per theme · switch the Theme toolbar above
+              to see light mode · resize the window to check responsiveness.
+            </Text>
+          </footer>
+        </div>
+        <Toaster />
+      </main>
+    </TooltipProvider>
+  );
+}
+
+export const Kitchen: Story = {
+  render: () => <KitchenSink />,
+};

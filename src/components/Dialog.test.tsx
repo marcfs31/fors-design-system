@@ -46,4 +46,21 @@ describe("Dialog", () => {
     await userEvent.click(screen.getByRole("button", { name: "Delete project" }));
     expect(await axe(screen.getByRole("dialog"))).toHaveNoViolations();
   });
+
+  it("applies responsive width and overflow classes to DialogContent", async () => {
+    render(<ExampleDialog />);
+    await userEvent.click(screen.getByRole("button", { name: "Delete project" }));
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveClass("w-[calc(100vw-2rem)]");
+    expect(dialog).toHaveClass("max-h-[calc(100vh-2rem)]");
+    expect(dialog).toHaveClass("overflow-y-auto");
+  });
+
+  it("close button has adequate touch target size", async () => {
+    render(<ExampleDialog />);
+    await userEvent.click(screen.getByRole("button", { name: "Delete project" }));
+    const closeButton = screen.getByRole("button", { name: "Close" });
+    expect(closeButton).toHaveClass("min-h-10");
+    expect(closeButton).toHaveClass("min-w-10");
+  });
 });

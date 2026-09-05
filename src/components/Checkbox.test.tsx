@@ -18,4 +18,10 @@ describe("Checkbox", () => {
     const { container } = render(<Checkbox aria-label="Agree to terms" />);
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it("has minimum 24px touch target size", () => {
+    render(<Checkbox aria-label="Agree to terms" />);
+    const checkbox = screen.getByRole("checkbox", { name: "Agree to terms" });
+    expect(checkbox).toHaveClass("h-6", "w-6");
+  });
 });

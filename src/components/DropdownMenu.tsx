@@ -24,7 +24,7 @@ export const DropdownMenuContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 min-w-[10rem] overflow-hidden rounded-md border border-ink-border bg-ink-surface p-1 shadow-lg",
+        "z-50 min-w-[10rem] max-w-[calc(100vw-2rem)] overflow-hidden rounded-md border border-ink-border bg-ink-surface p-1 shadow-lg",
         POPPER_ANIMATION_CLASSES,
         className
       )}

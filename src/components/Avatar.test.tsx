@@ -11,9 +11,17 @@ describe("Avatar", () => {
 
   it("falls back to initials when the image fails to load", () => {
     render(<Avatar src="https://broken.example/x.png" initials="MF" alt="Marc Fors" />);
-    const img = screen.getByRole("img");
+    const img = screen.getByRole("img", { name: "Marc Fors" });
     fireEvent.error(img);
     expect(screen.getByText("MF")).toBeInTheDocument();
+  });
+
+  it("preserves accessible name when falling back to initials", () => {
+    render(<Avatar src="https://broken.example/x.png" initials="MF" alt="Marc Fors" />);
+    const img = screen.getByRole("img", { name: "Marc Fors" });
+    fireEvent.error(img);
+    // After image fails, the wrapper span should still be accessible with the name
+    expect(screen.getByRole("img", { name: "Marc Fors" })).toBeInTheDocument();
   });
 
   it("has no accessibility violations", async () => {
@@ -45,5 +53,16 @@ describe("AvatarGroup", () => {
       </AvatarGroup>
     );
     expect(screen.queryByText(/^\+/)).not.toBeInTheDocument();
+  });
+
+  it("exposes accessible label on overflow bubble", () => {
+    render(
+      <AvatarGroup max={2}>
+        <Avatar initials="MF" alt="Marc Fors" />
+        <Avatar initials="JD" alt="Jamie Doe" />
+        <Avatar initials="AK" alt="Alex Kim" />
+      </AvatarGroup>
+    );
+    expect(screen.getByRole("img", { name: "1 more" })).toBeInTheDocument();
   });
 });

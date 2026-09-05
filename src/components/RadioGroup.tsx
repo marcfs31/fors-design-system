@@ -22,7 +22,7 @@ export const RadioGroupItem = React.forwardRef<
   <RadioGroupPrimitive.Item
     ref={ref}
     className={cn(
-      "h-4 w-4 shrink-0 rounded-full border border-ink-border bg-ink-surface transition-colors duration-base",
+      "h-6 w-6 shrink-0 rounded-full border border-ink-border bg-ink-surface transition-colors duration-base",
       "focus-visible:outline-none focus-visible:shadow-focus-ring",
       "data-[state=checked]:border-accent",
       "disabled:cursor-not-allowed disabled:opacity-50",
@@ -31,7 +31,7 @@ export const RadioGroupItem = React.forwardRef<
     {...props}
   >
     <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-      <span className="h-2 w-2 rounded-full bg-accent" />
+      <span className="h-3 w-3 rounded-full bg-accent" />
     </RadioGroupPrimitive.Indicator>
   </RadioGroupPrimitive.Item>
 ));

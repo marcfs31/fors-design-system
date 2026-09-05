@@ -3,7 +3,11 @@ import { cn } from "../lib/cn";
 
 export function Pagination({ className, ...props }: React.ComponentPropsWithoutRef<"nav">) {
   return (
-    <nav aria-label="Pagination" className={cn("flex items-center gap-1", className)} {...props} />
+    <nav
+      aria-label="Pagination"
+      className={cn("flex flex-wrap items-center gap-1", className)}
+      {...props}
+    />
   );
 }
 

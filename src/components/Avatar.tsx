@@ -32,7 +32,12 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
     const [errored, setErrored] = React.useState(false);
     const showImage = src && !errored;
     return (
-      <span ref={ref} className={cn(avatarVariants({ size }), className)} {...props}>
+      <span
+        ref={ref}
+        className={cn(avatarVariants({ size }), className)}
+        {...(alt && !showImage && { role: "img", "aria-label": alt })}
+        {...props}
+      >
         {showImage ? (
           <img
             src={src}
@@ -71,7 +76,11 @@ export function AvatarGroup({ className, max, children, ...props }: AvatarGroupP
         </div>
       ))}
       {overflow > 0 && (
-        <div className="-ml-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-surface-2 font-heading text-sm font-medium text-fg-secondary ring-2 ring-ink-bg">
+        <div
+          className="-ml-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-surface-2 font-heading text-sm font-medium text-fg-secondary ring-2 ring-ink-bg"
+          role="img"
+          aria-label={`${overflow} more`}
+        >
           +{overflow}
         </div>
       )}

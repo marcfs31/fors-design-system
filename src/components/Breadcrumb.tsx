@@ -45,14 +45,7 @@ export const BreadcrumbPage = React.forwardRef<
   HTMLSpanElement,
   React.HTMLAttributes<HTMLSpanElement>
 >(({ className, ...props }, ref) => (
-  <span
-    ref={ref}
-    role="link"
-    aria-disabled="true"
-    aria-current="page"
-    className={cn("font-medium text-fg", className)}
-    {...props}
-  />
+  <span ref={ref} aria-current="page" className={cn("font-medium text-fg", className)} {...props} />
 ));
 BreadcrumbPage.displayName = "BreadcrumbPage";
 

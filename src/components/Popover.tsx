@@ -27,7 +27,7 @@ export const PopoverContent = React.forwardRef<
       align={align}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 w-72 rounded-md border border-ink-border bg-ink-surface p-4 shadow-lg outline-none",
+        "z-50 w-72 max-w-[calc(100vw-2rem)] rounded-md border border-ink-border bg-ink-surface p-4 shadow-lg outline-none",
         POPPER_ANIMATION_CLASSES,
         className
       )}

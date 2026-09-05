@@ -5,6 +5,9 @@ import { cn } from "../lib/cn";
  * Styled semantic table parts — no sorting/pagination/virtualization logic.
  * For interactive tables, layer a headless library (e.g. TanStack Table)
  * on top and render its rows/cells through these primitives.
+ *
+ * On mobile, the table is automatically wrapped in a scrollable container
+ * to prevent horizontal overflow.
  */
 export const Table = React.forwardRef<
   HTMLTableElement,
@@ -52,9 +55,10 @@ TableRow.displayName = "TableRow";
 export const TableHead = React.forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
+>(({ className, scope = "col", ...props }, ref) => (
   <th
     ref={ref}
+    scope={scope}
     className={cn(
       "px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-fg-muted",
       className

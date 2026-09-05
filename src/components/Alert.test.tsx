@@ -15,6 +15,20 @@ describe("Alert", () => {
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
 
+  it("uses assertive alert role for danger variant", () => {
+    render(<Alert variant="danger">Deployment failed.</Alert>);
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+  });
+
+  it("allows explicit assertive prop to override variant", () => {
+    render(
+      <Alert variant="success" assertive={true}>
+        Critical success!
+      </Alert>
+    );
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+  });
+
   it("has no accessibility violations", async () => {
     const { container } = render(
       <Alert variant="danger" title="Deploy failed">

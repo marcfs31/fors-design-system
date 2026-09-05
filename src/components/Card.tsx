@@ -2,7 +2,12 @@ import * as React from "react";
 import { cn } from "../lib/cn";
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Adds hover elevation/border highlight for clickable cards. */
+  /**
+   * Adds hover styling (border highlight) to suggest the card is interactive.
+   * **Note**: This is visual only — the component does not handle clicks or
+   * keyboard navigation. Wrap the card in a `<button>`, `<a>`, or add
+   * `role`/`tabIndex` to enable real interactivity.
+   */
   interactive?: boolean;
 }
 
@@ -29,6 +34,12 @@ export const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
 );
 CardHeader.displayName = "CardHeader";
 
+/**
+ * Card section heading, always rendered as an `<h3>`. Ensure this fits
+ * the document heading outline where used; override with `className` or
+ * wrap/replace if a different level is needed (e.g., on a page where
+ * `CardTitle` is the main `<h1>`).
+ */
 export const CardTitle = React.forwardRef<
   HTMLHeadingElement,
   React.HTMLAttributes<HTMLHeadingElement>

@@ -12,7 +12,7 @@ export const Checkbox = React.forwardRef<
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(
-      "peer h-4 w-4 shrink-0 rounded-sm border border-ink-border bg-ink-surface transition-colors duration-base",
+      "peer h-6 w-6 shrink-0 rounded-sm border border-ink-border bg-ink-surface transition-colors duration-base",
       "focus-visible:outline-none focus-visible:shadow-focus-ring",
       "data-[state=checked]:border-accent data-[state=checked]:bg-accent",
       "disabled:cursor-not-allowed disabled:opacity-50",
@@ -21,7 +21,7 @@ export const Checkbox = React.forwardRef<
     {...props}
   >
     <CheckboxPrimitive.Indicator className="flex items-center justify-center text-accent-fg">
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+      <svg width="14" height="14" viewBox="0 0 10 10" fill="none" aria-hidden="true">
         <path
           d="M1.5 5L4 7.5L8.5 2.5"
           stroke="currentColor"

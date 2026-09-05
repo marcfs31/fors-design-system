@@ -16,6 +16,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, invalid, hint, id, rows = 4, ...props }, ref) => {
     const generatedId = React.useId();
     const textareaId = id ?? generatedId;
+    const hintId = React.useId();
     return (
       <div className="flex flex-col gap-1.5">
         <textarea
@@ -32,10 +33,14 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             className
           )}
           aria-invalid={invalid || undefined}
+          aria-describedby={hint ? hintId : undefined}
           {...props}
         />
         {hint && (
-          <span className={cn("text-xs font-sans", invalid ? "text-danger" : "text-fg-muted")}>
+          <span
+            id={hintId}
+            className={cn("text-xs font-sans", invalid ? "text-danger" : "text-fg-muted")}
+          >
             {hint}
           </span>
         )}

@@ -51,4 +51,21 @@ describe("DropdownMenu", () => {
     await screen.findByRole("menuitem", { name: "Rename" });
     expect(await axe(screen.getByRole("menu"))).toHaveNoViolations();
   });
+
+  it("applies responsive max-width to DropdownMenuContent", async () => {
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost">Actions</Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Rename</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    screen.getByRole("button", { name: "Actions" }).focus();
+    await userEvent.keyboard("{Enter}");
+    const menu = await screen.findByRole("menu");
+    expect(menu).toHaveClass("max-w-[calc(100vw-2rem)]");
+  });
 });

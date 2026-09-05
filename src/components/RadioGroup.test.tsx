@@ -29,4 +29,14 @@ describe("RadioGroup", () => {
     );
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it("has minimum 24px touch target size", () => {
+    render(
+      <RadioGroup defaultValue="hobby" aria-label="Plan">
+        <RadioGroupItem value="hobby" aria-label="Hobby" />
+      </RadioGroup>
+    );
+    const radio = screen.getByRole("radio", { name: "Hobby" });
+    expect(radio).toHaveClass("h-6", "w-6");
+  });
 });

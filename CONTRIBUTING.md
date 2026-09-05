@@ -26,6 +26,11 @@ All of these run in CI; failing any of them blocks merge.
 
 ## Adding or changing a component
 
+> Working with Claude Code in this repo? Two project skills encode everything
+> below in full: **`new-component`** (authoring one to spec) and
+> **`component-audit`** (sweeping the library for a11y / responsive defects).
+> They live in `.claude/skills/` and load automatically when the task matches.
+
 Every component needs, at minimum:
 
 - `Name.tsx` — `React.forwardRef`, variants via `class-variance-authority` where applicable, and JSDoc on the exported component describing _when_ to use each variant (this becomes both the Storybook description and, eventually, the design-agent-facing docs when this repo is synced to claude.ai/design).
@@ -37,6 +42,26 @@ Every component needs, at minimum:
   ```
 - If it introduces new color/state combinations, add the relevant fg/bg pairs to `src/tokens/__tests__/contrast.test.ts`.
 - Export it from `src/index.ts`.
+
+### Accessibility (WCAG 2.1 AA) — non-negotiable, checked before merge
+
+- **Name / role / value** on every interactive element; decorative `<svg>` gets `aria-hidden="true"`; no redundant/invalid roles.
+- **Helper / error text is linked** to its control via `aria-describedby` (id from `React.useId()`), with `aria-invalid` on error — see `Input.tsx` / `Textarea.tsx`.
+- **Keyboard**: fully operable; custom widgets implement their WAI-ARIA key model (Arrow/Home/End/Esc/Enter/Space) and `id`↔`aria-controls`/`aria-labelledby` wiring — see the hand-rolled `Tabs.tsx`.
+- **Visible focus** via `focus-visible:outline-none focus-visible:shadow-focus-ring` everywhere.
+- **Touch targets ≥ 24×24 px** (WCAG 2.5.8) — pad icon-only buttons; bare checkbox/radio is `h-6 w-6`.
+- **Live regions** for async feedback: `role="status"` (polite) / `role="alert"` (assertive for errors) — see `Alert.tsx`.
+- Reduced motion is already handled globally in `src/styles/globals.css` — don't re-implement it per component.
+- The `axe` test above is the automated floor; it does not replace this checklist.
+
+### Responsiveness — usable at 320 / 768 / 1280 px, no horizontal page scroll
+
+- Cap fixed widths that can exceed 320px: `max-w-[calc(100vw-2rem)]`, or `max-w-[var(--radix-popper-available-width)]` for Radix poppers. `Dialog` content is `w-[calc(100vw-2rem)] max-w-md`.
+- Tall overlays scroll internally (`max-h-[calc(100vh-2rem)] overflow-y-auto`), not off the viewport.
+- Wide content (tables) lives in `<div className="w-full overflow-x-auto">`.
+- Control strips wrap (`flex-wrap`) or scroll (`overflow-x-auto` + `shrink-0` children).
+- No `whitespace-nowrap` on user content; add `min-w-0` to growable flex children.
+- Verify in Storybook at 375px and desktop, in **both** themes — the `Fors/Overview` "Kitchen" story is the fastest whole-system check.
 
 Overlay or positioned components (anything opening on click/hover — dialogs, menus, tooltips, popovers) should be built on a Radix UI primitive rather than hand-rolled — see any existing overlay component (`Dialog.tsx`, `Popover.tsx`) for the pattern: unstyled Radix primitive + this repo's Tailwind token classes + `POPPER_ANIMATION_CLASSES` from `src/lib/animation.ts` for open/close motion.
 
