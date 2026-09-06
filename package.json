@@ -3,6 +3,7 @@
   "version": "1.3.0",
   "private": false,
   "description": "Fors Corporation design system — brand tokens and React components.",
+  "author": "Fors Corporation <developer@marcfors.com>",
   "license": "UNLICENSED",
   "type": "module",
   "engines": {

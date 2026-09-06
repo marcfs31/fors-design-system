@@ -4,7 +4,7 @@ The **source** of this project is public. The **package** (`@marcfs31/design-sys
 
 ## Reporting a vulnerability
 
-If you find a security issue in this project (e.g. an XSS vector in a component, a dependency with a known CVE), open a private security advisory on this repository ("Security" → "Report a vulnerability") or contact the maintainer directly rather than filing a public issue.
+If you find a security issue in this project (e.g. an XSS vector in a component, a dependency with a known CVE), open a private security advisory on this repository ("Security" → "Report a vulnerability") or email developer@marcfors.com directly rather than filing a public issue.
 
 ## Dependencies
 
