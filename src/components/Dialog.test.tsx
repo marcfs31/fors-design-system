@@ -60,4 +60,16 @@ describe("Dialog", () => {
     expect(closeButton).toHaveClass("min-h-10");
     expect(closeButton).toHaveClass("min-w-10");
   });
+
+  it("omits the close button when hideClose is set, relying on Escape instead", async () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent hideClose>
+          <DialogTitle>Chrome-free surface</DialogTitle>
+        </DialogContent>
+      </Dialog>
+    );
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Close" })).not.toBeInTheDocument();
+  });
 });

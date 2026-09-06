@@ -96,5 +96,17 @@ export {
 export { Separator, type SeparatorProps } from "./components/Separator";
 export { Label, type LabelProps } from "./components/Label";
 export { Collapsible, CollapsibleTrigger, CollapsibleContent } from "./components/Collapsible";
+export {
+  Command,
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandSeparator,
+  CommandItem,
+  type CommandProps,
+  type CommandDialogProps,
+} from "./components/Command";
 
 export { cn } from "./lib/cn";

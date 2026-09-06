@@ -13,11 +13,14 @@ export const DialogClose = DialogPrimitive.Close;
  * <DialogTitle>...</DialogTitle><DialogDescription>...</DialogDescription>
  * </DialogHeader>...<DialogFooter>...</DialogFooter></DialogContent></Dialog>`.
  * For destructive confirmations, put the `danger` Button in the footer.
+ * Pass `hideClose` for chrome-free surfaces (e.g. `CommandDialog`) that rely
+ * on Escape to close instead of a visible affordance — leave it unset
+ * everywhere else, since a discoverable close control is otherwise expected.
  */
 export const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { hideClose?: boolean }
+>(({ className, children, hideClose, ...props }, ref) => (
   <DialogPrimitive.Portal>
     <DialogPrimitive.Overlay
       className={cn(
@@ -37,19 +40,21 @@ export const DialogContent = React.forwardRef<
       {...props}
     >
       {children}
-      <DialogPrimitive.Close
-        aria-label="Close"
-        className="absolute right-4 top-4 flex min-h-10 min-w-10 items-center justify-center rounded-sm text-fg-muted transition-colors duration-base hover:text-fg focus-visible:outline-none focus-visible:shadow-focus-ring"
-      >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path
-            d="M1 1L13 13M13 1L1 13"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      </DialogPrimitive.Close>
+      {!hideClose && (
+        <DialogPrimitive.Close
+          aria-label="Close"
+          className="absolute right-4 top-4 flex min-h-10 min-w-10 items-center justify-center rounded-sm text-fg-muted transition-colors duration-base hover:text-fg focus-visible:outline-none focus-visible:shadow-focus-ring"
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path
+              d="M1 1L13 13M13 1L1 13"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </DialogPrimitive.Close>
+      )}
     </DialogPrimitive.Content>
   </DialogPrimitive.Portal>
 ));

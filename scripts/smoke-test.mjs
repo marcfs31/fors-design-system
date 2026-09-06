@@ -121,6 +121,8 @@ const EXPECTED_COMPONENT_EXPORTS = [
   "Separator",
   "Label",
   "Collapsible",
+  "Command",
+  "CommandDialog",
 ];
 
 for (const name of EXPECTED_COMPONENT_EXPORTS) {

@@ -60,6 +60,14 @@ import {
   BreadcrumbSeparator,
 } from "./components/Breadcrumb";
 import { Pagination, PaginationItem, PaginationEllipsis } from "./components/Pagination";
+import {
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "./components/Command";
 import { DARK_PALETTE, LIGHT_PALETTE } from "./tokens/palettes";
 
 const meta: Meta = {
@@ -127,8 +135,14 @@ function KitchenSink() {
   const [concurrency, setConcurrency] = React.useState(40);
   const [saving, setSaving] = React.useState(false);
   const [page, setPage] = React.useState(1);
+  const [commandOpen, setCommandOpen] = React.useState(false);
 
   const emailInvalid = !email.includes("@");
+
+  function runCommand(action: () => void) {
+    setCommandOpen(false);
+    action();
+  }
 
   const TOTAL_PAGES = 12;
   const pageWindow = React.useMemo(() => {
@@ -153,14 +167,19 @@ function KitchenSink() {
     <TooltipProvider delayDuration={200}>
       <main className="min-h-screen bg-ink-bg p-4 sm:p-8 lg:p-10">
         <div className="mx-auto flex max-w-5xl flex-col gap-14 sm:gap-16">
-          <header className="flex flex-col gap-2">
-            <Heading as="h1" size="2xl">
-              Fors Design System
-            </Heading>
-            <Text tone="secondary">
-              Rapids Teal on near-black ink · Space Grotesk + Inter · 30 components, dark &amp;
-              light, responsive, WCAG&nbsp;AA
-            </Text>
+          <header className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-col gap-2">
+              <Heading as="h1" size="2xl">
+                Fors Design System
+              </Heading>
+              <Text tone="secondary">
+                Rapids Teal on near-black ink · Space Grotesk + Inter · 30 components, dark &amp;
+                light, responsive, WCAG&nbsp;AA
+              </Text>
+            </div>
+            <Button variant="secondary" onClick={() => setCommandOpen(true)}>
+              Quick actions…
+            </Button>
           </header>
 
           <Section id="ov-color" title="Color tokens (dark palette shown)">
@@ -582,6 +601,39 @@ function KitchenSink() {
           </footer>
         </div>
         <Toaster />
+        <CommandDialog
+          open={commandOpen}
+          onOpenChange={setCommandOpen}
+          label="Quick actions"
+          description="Search for an action to run against fors-client-portal."
+        >
+          <CommandInput placeholder="Type a command…" />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Deploy">
+              <CommandItem
+                onSelect={() =>
+                  runCommand(() =>
+                    toast({ title: "Redeploy queued", description: "main → Production" })
+                  )
+                }
+              >
+                Redeploy production
+              </CommandItem>
+              <CommandItem onSelect={() => runCommand(() => setPage(1))}>
+                Jump to first deployment page
+              </CommandItem>
+            </CommandGroup>
+            <CommandGroup heading="Settings">
+              <CommandItem onSelect={() => runCommand(() => setNotify((v) => !v))}>
+                Toggle failure emails
+              </CommandItem>
+              <CommandItem onSelect={() => runCommand(() => setPreviews((v) => !v))}>
+                Toggle preview deployments
+              </CommandItem>
+            </CommandGroup>
+          </CommandList>
+        </CommandDialog>
       </main>
     </TooltipProvider>
   );
