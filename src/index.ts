@@ -108,5 +108,11 @@ export {
   type CommandProps,
   type CommandDialogProps,
 } from "./components/Command";
+export {
+  Calendar,
+  DatePicker,
+  type CalendarProps,
+  type DatePickerProps,
+} from "./components/Calendar";
 
 export { cn } from "./lib/cn";

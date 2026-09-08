@@ -68,6 +68,7 @@ import {
   CommandGroup,
   CommandItem,
 } from "./components/Command";
+import { DatePicker } from "./components/Calendar";
 import { DARK_PALETTE, LIGHT_PALETTE } from "./tokens/palettes";
 
 const meta: Meta = {
@@ -136,6 +137,7 @@ function KitchenSink() {
   const [saving, setSaving] = React.useState(false);
   const [page, setPage] = React.useState(1);
   const [commandOpen, setCommandOpen] = React.useState(false);
+  const [deployDate, setDeployDate] = React.useState<Date | undefined>();
 
   const emailInvalid = !email.includes("@");
 
@@ -297,6 +299,19 @@ function KitchenSink() {
                     <SelectItem value="enterprise">Enterprise</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="ov-deploy-date" className="font-sans text-sm font-medium text-fg">
+                  Scheduled deploy date
+                </label>
+                <DatePicker
+                  id="ov-deploy-date"
+                  value={deployDate}
+                  onValueChange={setDeployDate}
+                  placeholder="No date scheduled"
+                  className="w-full"
+                />
               </div>
 
               <div className="flex flex-col gap-1.5 [grid-column:1/-1]">

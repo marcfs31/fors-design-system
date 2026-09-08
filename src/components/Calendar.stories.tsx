@@ -1,0 +1,114 @@
+import * as React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { expect, screen, userEvent, waitForElementToBeRemoved, within } from "@storybook/test";
+import { Calendar, DatePicker } from "./Calendar";
+
+const meta: Meta = {
+  title: "Fors/Calendar",
+  parameters: { layout: "fullscreen" },
+};
+export default meta;
+type Story = StoryObj;
+
+// A fixed reference month keeps stories/screenshots deterministic regardless
+// of when Storybook is opened.
+const REFERENCE_MONTH = new Date(2026, 8, 1);
+
+export const Default: Story = {
+  render: () => (
+    <div className="flex justify-center pt-12">
+      <Calendar
+        mode="single"
+        defaultMonth={REFERENCE_MONTH}
+        selected={new Date(2026, 8, 8)}
+        className="rounded-md border border-ink-border bg-ink-surface p-4"
+      />
+    </div>
+  ),
+};
+
+export const DisabledDates: Story = {
+  render: () => (
+    <div className="flex justify-center pt-12">
+      <Calendar
+        mode="single"
+        defaultMonth={REFERENCE_MONTH}
+        disabled={{ dayOfWeek: [0, 6] }}
+        className="rounded-md border border-ink-border bg-ink-surface p-4"
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const saturday = canvas.getByRole("button", { name: /Saturday, September 12/i });
+    await expect(saturday).toBeDisabled();
+  },
+};
+
+/**
+ * Real-browser interaction: arrow keys move focus across the date grid
+ * (including wrapping to the next/previous week), Enter selects.
+ */
+export const KeyboardNavigation: Story = {
+  render: () => (
+    <div className="flex justify-center pt-12">
+      <Calendar
+        mode="single"
+        defaultMonth={REFERENCE_MONTH}
+        selected={new Date(2026, 8, 8)}
+        className="rounded-md border border-ink-border bg-ink-surface p-4"
+      />
+    </div>
+  ),
+  play: async () => {
+    const selectedDay = await screen.findByRole("button", { name: /September 8.*selected/i });
+    selectedDay.focus();
+    await userEvent.keyboard("{ArrowRight}");
+    await expect(screen.getByRole("button", { name: /September 9/i })).toHaveFocus();
+    await userEvent.keyboard("{ArrowDown}");
+    await expect(screen.getByRole("button", { name: /September 16/i })).toHaveFocus();
+  },
+};
+
+function DatePickerExample() {
+  const [value, setValue] = React.useState<Date | undefined>(new Date(2026, 8, 8));
+  return (
+    <div className="flex max-w-xs flex-col gap-2 pt-12">
+      <DatePicker value={value} onValueChange={setValue} />
+    </div>
+  );
+}
+
+/**
+ * Real-browser interaction: opens the popover, moves through the grid with
+ * arrow keys, Enter selects and closes the popover, and the trigger's
+ * accessible name updates to the new selection.
+ */
+export const DatePickerExampleStory: Story = {
+  name: "DatePicker",
+  render: () => <DatePickerExample />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // The trigger's static "Selected date:"/"Change date." wording is this
+    // component's own hardcoded copy (locale-independent), but the date
+    // itself is formatted via `Intl.DateTimeFormat(undefined, ...)` — the
+    // *viewer's* locale, unlike the Calendar grid's day labels below, which
+    // react-day-picker always formats in English via its date-fns default.
+    // Match only the stable prefix/digit, not a full English sentence.
+    const trigger = canvas.getByRole("button", { name: /^Selected date:/i });
+    await expect(trigger).toHaveAccessibleName(/8/);
+    await userEvent.click(trigger);
+    const grid = await screen.findByRole("grid");
+    await expect(grid).toBeInTheDocument();
+    const target = screen.getByRole("button", { name: /September 15/i });
+    target.focus();
+    await userEvent.keyboard("{Enter}");
+    // Radix keeps the popover mounted through its CSS close animation
+    // (Presence), so the grid disappears asynchronously, not the instant
+    // `open` flips to false — same pattern as Popover's `OpensOnClick` story.
+    await waitForElementToBeRemoved(() => screen.queryByRole("grid"));
+    await expect(canvas.getByRole("button", { name: /^Selected date:/i })).toHaveAccessibleName(
+      /15/
+    );
+  },
+};

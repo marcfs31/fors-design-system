@@ -123,6 +123,8 @@ const EXPECTED_COMPONENT_EXPORTS = [
   "Collapsible",
   "Command",
   "CommandDialog",
+  "Calendar",
+  "DatePicker",
 ];
 
 for (const name of EXPECTED_COMPONENT_EXPORTS) {

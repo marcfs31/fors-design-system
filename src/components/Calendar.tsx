@@ -1,0 +1,184 @@
+import * as React from "react";
+import {
+  DayPicker,
+  UI,
+  DayFlag,
+  SelectionState,
+  type DayButtonProps,
+  type DayPickerProps,
+} from "react-day-picker";
+import { cn } from "../lib/cn";
+import { Popover, PopoverTrigger, PopoverContent } from "./Popover";
+
+export type CalendarProps = DayPickerProps;
+
+const navButtonClass = cn(
+  "inline-flex h-8 w-8 items-center justify-center rounded-md text-fg-muted transition-colors duration-base",
+  "hover:bg-ink-surface-2 hover:text-fg",
+  "focus-visible:outline-none focus-visible:shadow-focus-ring",
+  "disabled:pointer-events-none disabled:opacity-40"
+);
+
+const defaultClassNames: Partial<Record<UI | DayFlag | SelectionState, string>> = {
+  // `UI.Nav`'s `absolute inset-x-0` positions relative to the nearest
+  // positioned ancestor, which by default (no `navLayout` prop) is `Months`
+  // — `Nav` renders as `Months`'s direct sibling to `Month`, not nested
+  // inside it. `relative` has to live here, not on `Month`/`MonthCaption`,
+  // or the buttons escape to the viewport edges instead of the card.
+  [UI.Months]: "relative flex flex-col gap-4 sm:flex-row",
+  [UI.Month]: "flex flex-col gap-3",
+  [UI.MonthCaption]: "flex h-9 items-center justify-center",
+  [UI.CaptionLabel]: "font-sans text-sm font-medium text-fg",
+  [UI.Nav]: "absolute inset-x-0 flex items-center justify-between",
+  [UI.PreviousMonthButton]: navButtonClass,
+  [UI.NextMonthButton]: navButtonClass,
+  [UI.Chevron]: "h-4 w-4 fill-current",
+  [UI.MonthGrid]: "w-full border-collapse",
+  [UI.Weekdays]: "flex",
+  [UI.Weekday]: "w-9 text-center text-xs font-medium text-fg-muted",
+  [UI.Weeks]: "flex flex-col gap-1",
+  [UI.Week]: "flex gap-1",
+  [UI.Day]: "p-0 text-center",
+};
+
+/**
+ * `DayButton` swapped in wholesale (per react-day-picker's own recommended
+ * customization surface) rather than styled via `classNames[UI.DayButton]` —
+ * v10 puts `data-selected`/`data-today`/etc. on the non-interactive day cell
+ * (the `td`), not on the button itself, so the button's own selected/today/
+ * disabled look has to be computed from the `modifiers` prop react-day-picker
+ * passes to this component. The focus effect mirrors the library's own
+ * default `DayButton` — react-day-picker moves keyboard-grid focus by
+ * flagging `modifiers.focused`, and skipping this would silently break
+ * arrow-key navigation.
+ */
+function CalendarDayButton({ className, day: _day, modifiers, ...props }: DayButtonProps) {
+  const ref = React.useRef<HTMLButtonElement>(null);
+  React.useEffect(() => {
+    if (modifiers.focused) ref.current?.focus();
+  }, [modifiers.focused]);
+  return (
+    <button
+      ref={ref}
+      type="button"
+      className={cn(
+        "inline-flex h-9 w-9 items-center justify-center rounded-md text-sm font-sans text-fg outline-none transition-colors duration-base",
+        "hover:bg-ink-surface-2",
+        "focus-visible:outline-none focus-visible:shadow-focus-ring",
+        modifiers.outside && "text-fg-muted opacity-50",
+        modifiers.today && !modifiers.selected && "font-semibold text-accent",
+        modifiers.selected && "bg-accent text-accent-fg hover:bg-accent-hover",
+        modifiers.disabled && "pointer-events-none text-fg-muted opacity-30",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+/**
+ * Date grid built on `react-day-picker` — reach for `DatePicker` instead when
+ * you need a compact form field rather than an always-visible grid. Scoped
+ * to single/multiple selection for now; range selection isn't wired up yet.
+ * react-day-picker implements the full WAI-ARIA date-grid keyboard model
+ * (arrow keys, Home/End/PageUp/PageDown) and month-nav accessible names
+ * itself — this wrapper only restyles it with this repo's tokens. No `ref`
+ * prop: `DayPicker` is a plain function component with no ref-forwarding
+ * support of its own (no `forwardRef`, no `rootRef` prop), so there's
+ * nothing real to forward here.
+ */
+export function Calendar({ classNames, components, ...props }: CalendarProps) {
+  return (
+    <DayPicker
+      classNames={{ ...defaultClassNames, ...classNames }}
+      components={{ DayButton: CalendarDayButton, ...components }}
+      {...props}
+    />
+  );
+}
+
+export interface DatePickerProps {
+  /** The selected date, or `undefined` for none. */
+  value?: Date;
+  /** Fires when a date is picked; the popover closes immediately after. */
+  onValueChange?: (date: Date | undefined) => void;
+  /** Shown (and used as the field's accessible name) when nothing is selected. */
+  placeholder?: string;
+  /** Matches `Calendar`'s `disabled` matcher — dates it accepts can't be picked. */
+  disabled?: DayPickerProps["disabled"];
+  className?: string;
+  /** Forwarded to the trigger button, e.g. to pair it with a `<label htmlFor>`. */
+  id?: string;
+}
+
+const CALENDAR_ICON = (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    aria-hidden="true"
+    className="shrink-0"
+  >
+    <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+    <path
+      d="M2 6.5h12M5 1.5v3M11 1.5v3"
+      stroke="currentColor"
+      strokeWidth="1.3"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+/**
+ * Compact form field pairing a text trigger with a `Calendar` in a
+ * `Popover` — single-date selection only (see `Calendar`'s own scope note).
+ * The trigger's accessible name always reflects the current value instead of
+ * a generic "Open calendar", per this repo's `Popover` naming requirement.
+ */
+export function DatePicker({
+  value,
+  onValueChange,
+  placeholder = "Pick a date",
+  disabled,
+  className,
+  id,
+}: DatePickerProps) {
+  const [open, setOpen] = React.useState(false);
+  const label = value
+    ? new Intl.DateTimeFormat(undefined, { dateStyle: "long" }).format(value)
+    : placeholder;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          id={id}
+          type="button"
+          aria-label={value ? `Selected date: ${label}. Change date.` : placeholder}
+          className={cn(
+            "flex h-10 w-full items-center gap-2 rounded-md border border-ink-border bg-ink-surface px-3 text-sm font-sans transition-colors duration-base",
+            "focus-visible:outline-none focus-visible:shadow-focus-ring",
+            value ? "text-fg" : "text-fg-muted",
+            className
+          )}
+        >
+          {CALENDAR_ICON}
+          {label}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="start" aria-label="Choose a date" className="w-auto p-2">
+        <Calendar
+          mode="single"
+          selected={value}
+          onSelect={(date) => {
+            onValueChange?.(date);
+            setOpen(false);
+          }}
+          disabled={disabled}
+          autoFocus
+        />
+      </PopoverContent>
+    </Popover>
+  );
+}

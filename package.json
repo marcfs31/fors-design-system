@@ -77,9 +77,9 @@
   },
   "size-limit": [
     {
-      "name": "JS bundle (import * from index.js, incl. Radix deps, brotli)",
+      "name": "JS bundle (import * from index.js, incl. Radix + cmdk + react-day-picker deps, brotli)",
       "path": "dist/index.js",
-      "limit": "70 KB"
+      "limit": "85 KB"
     },
     {
       "name": "Compiled CSS (brotli)",
@@ -110,6 +110,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "react-day-picker": "^10.0.1",
     "tailwind-merge": "^3.6.0",
     "tailwindcss-animate": "^1.0.7"
   },
