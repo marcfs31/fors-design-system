@@ -39,7 +39,7 @@ bump.
 Every change lands with the test that would have caught it breaking. The layers, what each one catches, and the per-change checklist live in the `testing` skill (`.claude/skills/testing/SKILL.md`); the policy is:
 
 - **Coverage is a floor, not a target.** `npm run test:coverage` enforces 98% statements/lines, 85% branches/functions (`vitest.config.ts`). New source files under `src/` are covered by a test that asserts something real about them — never by an `exclude` entry. The thresholds only ever go up.
-- **Every public surface has a proof at its own layer.** Component behavior and accessibility → co-located `*.test.tsx` (`vitest-axe`). Rendered DOM → `src/__tests__/dom-snapshot.test.tsx`. Color pairings → `src/tokens/__tests__/contrast.test.ts`. Real-browser render + axe + `play` flows → Storybook test runner. The built artifact → `npm run smoke`. Package resolution → `npm run test:package`. A real consumer app → `npm run test:consumer`. Bundle size → `npm run size`.
+- **Every public surface has a proof at its own layer.** Component behavior and accessibility → co-located `*.test.tsx` (`vitest-axe`). Rendered DOM → `src/__tests__/dom-snapshot.test.tsx`. Color pairings → `src/tokens/__tests__/contrast.test.ts`. Real-browser render + axe + `play` flows → Storybook Vitest addon. The built artifact → `npm run smoke`. Package resolution → `npm run test:package`. A real consumer app → `npm run test:consumer`. Bundle size → `npm run size`.
 - **Green everywhere before merge.** All of the above run in CI and are required status checks on `main` — a PR cannot merge with a red or stale check, and admins are not exempt.
 
 ## Regression policy
@@ -109,7 +109,7 @@ Every component needs, at minimum:
 
 Overlay or positioned components (anything opening on click/hover — dialogs, menus, tooltips, popovers) should be built on a Radix UI primitive rather than hand-rolled — see any existing overlay component (`Dialog.tsx`, `Popover.tsx`) for the pattern: unstyled Radix primitive + this repo's Tailwind token classes + `POPPER_ANIMATION_CLASSES` from `src/lib/animation.ts` for open/close motion.
 
-**Testing overlay components (Dialog, DropdownMenu, Popover, Tooltip, Select):** keep jsdom tests **structural and fast** — render with `defaultOpen` and assert roles / props / classes. Do **not** run `axe()` on an _open_ overlay in jsdom: with no layout engine it takes minutes and times out on CI. Open-state accessibility and real open/close interaction are covered by the Storybook test runner in real Chromium (`npm run test:storybook`) via the component's stories and `play` functions. `axe()` in a `*.test.tsx` is for **inline** components. See `.claude/skills/testing`.
+**Testing overlay components (Dialog, DropdownMenu, Popover, Tooltip, Select):** keep jsdom tests **structural and fast** — render with `defaultOpen` and assert roles / props / classes. Do **not** run `axe()` on an _open_ overlay in jsdom: with no layout engine it takes minutes and times out on CI. Open-state accessibility and real open/close interaction are covered by the Storybook Vitest addon in real Chromium (`npm run test:storybook`) via the component's stories and `play` functions. `axe()` in a `*.test.tsx` is for **inline** components. See `.claude/skills/testing`.
 
 ## Versioning
 

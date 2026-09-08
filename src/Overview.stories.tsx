@@ -88,7 +88,7 @@ const meta: Meta = {
     layout: "fullscreen",
     // This story is a full page with a real <main> landmark, so re-enable the
     // `region` rule the test runner turns off for isolated component stories.
-    a11y: { options: { rules: { region: { enabled: true } } } },
+    a11y: { config: { rules: [{ id: "region", enabled: true }] } },
   },
 };
 export default meta;

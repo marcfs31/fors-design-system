@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, screen, userEvent, within } from "@storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -23,7 +23,7 @@ export const ProjectActions: Story = {
   // axe's `aria-hidden-focus` rule flags as a static-snapshot false positive
   // against that focus-trap pattern — the KeyboardSelect play test below
   // exercises the open menu properly.
-  parameters: { a11y: { options: { rules: { "aria-hidden-focus": { enabled: false } } } } },
+  parameters: { a11y: { config: { rules: [{ id: "aria-hidden-focus", enabled: false }] } } },
   render: () => (
     <div className="flex h-64 items-start justify-center pt-12">
       <DropdownMenu defaultOpen>
@@ -79,5 +79,11 @@ export const KeyboardSelect: Story = {
     await screen.findByRole("menuitem", { name: "Rename" });
     await userEvent.keyboard("{ArrowDown}{Enter}");
     await expect(canvas.getByTestId("picked")).toHaveTextContent("duplicate");
+    // Radix removes the `aria-hidden` it puts on the rest of the page while
+    // the menu is open asynchronously, just after the item-select dismiss —
+    // wait for that to actually land before the a11y check (vitest.config.ts)
+    // measures the page, or it can catch this root mid-teardown, still
+    // marked `aria-hidden` while it (legitimately) still holds focus.
+    await waitFor(() => expect(canvasElement).not.toHaveAttribute("aria-hidden"));
   },
 };
