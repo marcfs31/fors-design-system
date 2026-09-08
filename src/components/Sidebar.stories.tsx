@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, screen, userEvent, waitFor, within } from "@storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 import {
   SidebarProvider,
   Sidebar,
@@ -18,7 +18,7 @@ const meta: Meta = {
   title: "Fors/Navigation/Sidebar",
   parameters: {
     layout: "fullscreen",
-    a11y: { options: { rules: { region: { enabled: true } } } },
+    a11y: { config: { rules: [{ id: "region", enabled: true }] } },
   },
 };
 export default meta;
@@ -141,10 +141,16 @@ export const ToggleCollapse: Story = {
  */
 export const MobileDrawer: Story = {
   // The mobile trigger is `md:hidden` — real at a narrow viewport, correctly
-  // absent from the accessibility tree at the test runner's default desktop
-  // size. `.storybook/test-runner.ts` reads this parameter and resizes the
-  // real browser page before `play` runs.
-  parameters: { viewport: { width: 390, height: 844 } },
+  // absent from the accessibility tree at the Storybook Vitest addon's
+  // default desktop size (.storybook/preview.ts). Overriding
+  // `defaultViewport` here makes it resize the real browser page to this
+  // entry before the story mounts (vitest.config.ts's "storybook" project).
+  parameters: {
+    viewport: {
+      options: { mobile: { name: "Mobile", styles: { width: "390px", height: "844px" } } },
+      defaultViewport: "mobile",
+    },
+  },
   render: () => (
     <SidebarProvider>
       <AppShell>

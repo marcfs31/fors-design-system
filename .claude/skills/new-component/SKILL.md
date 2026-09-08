@@ -77,7 +77,7 @@ size). The component-authoring minimum:
 
 - **Unit test** `Thing.test.tsx` — behavior (render, variant/prop effects, controlled + uncontrolled); a keyboard-driven test for anything interactive (Radix overlays: `.focus()` + `userEvent.keyboard("{Enter}")`, never `.click()` — jsdom lacks the pointer capture; these run slow, up to ~50s, that's expected); and the mandatory `import { axe } from "../test-utils/axe"` → `expect(await axe(container)).toHaveNoViolations()`.
 - **DOM snapshot** — add a canonical-render case to `src/__tests__/dom-snapshot.test.tsx`.
-- **`play` interaction test** on a story for any user flow jsdom can't drive well (overlay open/close, keyboard nav, form submit) — `expect`/`userEvent`/`within` from `@storybook/test`; the Storybook test runner executes it in real Chromium and also render-smokes + full-axes every story.
+- **`play` interaction test** on a story for any user flow jsdom can't drive well (overlay open/close, keyboard nav, form submit) — `expect`/`userEvent`/`within` from `storybook/test`; the Storybook Vitest addon executes it in real Chromium and also render-smokes + full-axes every story.
 - **New color pairing** → add the fg/bg pair to `src/tokens/__tests__/contrast.test.ts`.
 - **New component** → add its name to `EXPECTED_COMPONENT_EXPORTS` in `scripts/smoke-test.mjs`.
 - Run `npx vitest run src/components/Thing.test.tsx src/__tests__/dom-snapshot.test.tsx` — green before moving on. Coverage thresholds (98/98/85/85 statements/lines/branches/functions, see `vitest.config.ts`) are enforced by `npm run test:coverage`.
@@ -105,7 +105,7 @@ npm run smoke
 npm run test:package      # publint + are-the-types-wrong
 npx size-limit
 npm run build-storybook
-npm run storybook & npm run test:storybook   # real-browser render smoke + full axe + play tests
+npm run test:storybook   # real-browser (Storybook Vitest addon): render smoke + full axe + play tests
 ```
 
 Then verify visually in Storybook at mobile (375px) and desktop, in **both** themes (Theme toolbar) and **both** directions (Direction toolbar), plus the `Fors/Overview` "Kitchen"/"KitchenSinkRTL" stories if the component belongs there.

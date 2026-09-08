@@ -89,7 +89,7 @@ npm run smoke
 npm run test:package
 npx size-limit
 npm run build-storybook
-npm run storybook & npm run test:storybook   # real-browser: render smoke + full axe (incl. contrast) + play tests
+npm run test:storybook   # real-browser (Storybook Vitest addon): render smoke + full axe (incl. contrast) + play tests
 ```
 
 `npx vitest run -u` if a DOM snapshot changed — then re-read the diff.

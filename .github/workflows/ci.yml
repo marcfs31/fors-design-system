@@ -17,8 +17,8 @@ jobs:
       fail-fast: false
       matrix:
         # Runtime floor stays Node >=18.18 (see package.json engines) — the
-        # compiled dist runs there. The dev toolchain (test-runner, attw,
-        # concurrently) targets active LTS, so CI verifies on 20 and 22.
+        # compiled dist runs there. The dev toolchain (attw, the Storybook
+        # Vitest addon) targets active LTS, so CI verifies on 20 and 22.
         node: [20, 22]
     steps:
       - uses: actions/checkout@v7

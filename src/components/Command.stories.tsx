@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, screen, userEvent, within } from "@storybook/test";
+import { expect, screen, userEvent, within } from "storybook/test";
 import {
   Command,
   CommandDialog,
@@ -25,7 +25,7 @@ export const Default: Story = {
   // rule doesn't allow (listbox only permits option/group children). This is
   // cmdk's own built-in, widely-used group-divider pattern — see
   // `Command.test.tsx` for the same rule exception with fuller reasoning.
-  parameters: { a11y: { options: { rules: { "aria-required-children": { enabled: false } } } } },
+  parameters: { a11y: { config: { rules: [{ id: "aria-required-children", enabled: false }] } } },
   render: () => (
     <div className="flex justify-center pt-12">
       <Command label="Example commands" className="w-full max-w-md">
@@ -52,7 +52,7 @@ export const WithDialog: Story = {
   // Shown open for visual review. See DropdownMenu's `ProjectActions` story
   // for why a static-snapshot axe scan misreads Radix's legitimate
   // `aria-hidden` focus-trap on the rest of the page while a modal is open.
-  parameters: { a11y: { options: { rules: { "aria-hidden-focus": { enabled: false } } } } },
+  parameters: { a11y: { config: { rules: [{ id: "aria-hidden-focus", enabled: false }] } } },
   render: () => (
     <CommandDialog defaultOpen label="Quick actions" description="Search for an action to run.">
       <CommandInput placeholder="Type a command..." />
