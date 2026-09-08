@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, userEvent, within, waitForElementToBeRemoved } from "@storybook/test";
+import { expect, userEvent, within, waitFor } from "@storybook/test";
 import {
   Dialog,
   DialogTrigger,
@@ -105,6 +105,8 @@ export const OpenAndClose: Story = {
 
     const cancel = within(dialog).getByRole("button", { name: "Cancel" });
     await userEvent.click(cancel);
-    await waitForElementToBeRemoved(() => within(document.body).queryByRole("dialog"));
+    await waitFor(() =>
+      expect(within(document.body).queryByRole("dialog")).not.toBeInTheDocument()
+    );
   },
 };

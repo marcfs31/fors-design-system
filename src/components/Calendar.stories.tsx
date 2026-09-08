@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, screen, userEvent, waitForElementToBeRemoved, within } from "@storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "@storybook/test";
 import { Calendar, DatePicker } from "./Calendar";
 
 const meta: Meta = {
@@ -106,7 +106,10 @@ export const DatePickerExampleStory: Story = {
     // Radix keeps the popover mounted through its CSS close animation
     // (Presence), so the grid disappears asynchronously, not the instant
     // `open` flips to false — same pattern as Popover's `OpensOnClick` story.
-    await waitForElementToBeRemoved(() => screen.queryByRole("grid"));
+    // `waitFor` (not `waitForElementToBeRemoved`) because under the test
+    // runner's reduced-motion emulation the unmount can already have
+    // happened by the time this line runs, and the latter throws on that.
+    await waitFor(() => expect(screen.queryByRole("grid")).not.toBeInTheDocument());
     await expect(canvas.getByRole("button", { name: /^Selected date:/i })).toHaveAccessibleName(
       /15/
     );

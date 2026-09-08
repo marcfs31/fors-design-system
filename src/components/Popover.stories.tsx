@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, screen, userEvent, waitForElementToBeRemoved, within } from "@storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "@storybook/test";
 import { Popover, PopoverTrigger, PopoverContent } from "./Popover";
 import { Button } from "./Button";
 import { Input } from "./Input";
@@ -54,6 +54,6 @@ export const OpensOnClick: Story = {
     const dialog = await screen.findByRole("dialog", { name: "Filter options" });
     await expect(dialog).toHaveTextContent("Filter form");
     await userEvent.keyboard("{Escape}");
-    await waitForElementToBeRemoved(() => screen.queryByRole("dialog"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   },
 };
