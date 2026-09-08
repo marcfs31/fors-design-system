@@ -32,6 +32,18 @@ jobs:
       - run: npx size-limit
       - run: npm run test:package # publint + are-the-types-wrong on the built package
 
+  consumer:
+    name: consumer (packed tarball in a Next.js + Tailwind v4 app)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:consumer
+
   storybook:
     name: storybook (build + a11y/render test runner)
     runs-on: ubuntu-latest

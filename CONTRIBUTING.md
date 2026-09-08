@@ -18,6 +18,9 @@ npm run lint
 npm run format:check     # npm run format to auto-fix
 npm run test:coverage    # coverage thresholds are enforced — see vitest.config.ts
 npm run build
+npm run smoke             # public API + shipped CSS of the built dist/
+npm run test:package      # publint + are-the-types-wrong on the packed tarball
+npm run test:consumer     # packed tarball inside a real Next.js + Tailwind v4 app (fixtures/next-consumer)
 npm run build-storybook
 npm run size              # bundle-size budget — see the "size-limit" field in package.json
 ```

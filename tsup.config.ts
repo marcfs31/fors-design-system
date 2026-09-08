@@ -3,8 +3,13 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   // `index` is the client component bundle (its source starts with
   // "use client", which tsup preserves per-entry); `theme` is the
-  // server-safe utilities entry with no directive.
-  entry: { index: "src/index.ts", theme: "src/theme-entry.ts" },
+  // server-safe utilities entry with no directive; `tailwind-preset` is the
+  // Tailwind v3 preset (build-time only, never imported by app code).
+  entry: {
+    index: "src/index.ts",
+    theme: "src/theme-entry.ts",
+    "tailwind-preset": "src/tailwind-preset.ts",
+  },
   // ESM is the primary target; the CJS build is a compatibility shim so
   // `require()` from CommonJS tooling still resolves (validated by
   // `npm run test:package`).

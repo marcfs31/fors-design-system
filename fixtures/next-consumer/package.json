@@ -1,0 +1,22 @@
+{
+  "name": "fors-design-system-next-consumer",
+  "private": true,
+  "description": "Integration fixture: installs the packed @marcfs31/design-system tarball into a real Next.js App Router + Tailwind v4 + React 19 app and builds it. Driven by scripts/consumer-test.mjs.",
+  "type": "module",
+  "scripts": {
+    "build": "next build"
+  },
+  "dependencies": {
+    "next": "^16",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

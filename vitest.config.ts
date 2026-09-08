@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
@@ -7,6 +7,9 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
     globals: false,
+    // .claude/worktrees holds throwaway git worktrees (full repo copies with
+    // their own node_modules + tests) created by Claude Code sessions.
+    exclude: [...configDefaults.exclude, ".claude/worktrees/**", "fixtures/**"],
     // Radix overlay tests still open a portal + run focus-scope/floating-ui
     // logic under jsdom (no layout engine), which is slow-ish on a loaded CI
     // runner. The pathological case — `axe` on an *open* overlay, which ran

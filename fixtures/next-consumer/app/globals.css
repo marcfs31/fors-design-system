@@ -1,0 +1,5 @@
+/* Consumer-side Tailwind v4 setup: Tailwind itself, then the design-system
+   @theme mapping so token utilities (bg-accent, text-fg, rounded-md, ...)
+   are generated for this app's own markup. */
+@import "tailwindcss";
+@import "@marcfs31/design-system/tailwind.css";
