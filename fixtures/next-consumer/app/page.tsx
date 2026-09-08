@@ -1,7 +1,7 @@
 // Server Component page: library components used directly in an RSC tree
 // (the package's own "use client" boundary must make this work), plus one
 // element styled with the token vocabulary from the consumer's Tailwind.
-import { Button, Card, CardContent, CardHeader, CardTitle } from "@marcfs31/design-system";
+import { Button, Card, CardContent, CardHeader, CardTitle } from "@marcfs31/fors-design-system";
 
 export default function Page() {
   return (
