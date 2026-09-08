@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, screen, userEvent, waitForElementToBeRemoved, within } from "@storybook/test";
+import { expect, screen, userEvent, waitFor, within } from "@storybook/test";
 import {
   SidebarProvider,
   Sidebar,
@@ -15,7 +15,7 @@ import {
 import { Text } from "./Text";
 
 const meta: Meta = {
-  title: "Fors/Sidebar",
+  title: "Fors/Navigation/Sidebar",
   parameters: {
     layout: "fullscreen",
     a11y: { options: { rules: { region: { enabled: true } } } },
@@ -164,7 +164,7 @@ export const MobileDrawer: Story = {
     const dialog = await screen.findByRole("dialog", { name: "Main navigation" });
     await expect(dialog).toBeInTheDocument();
     await userEvent.keyboard("{Escape}");
-    await waitForElementToBeRemoved(() => screen.queryByRole("dialog"));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     await expect(trigger).toHaveFocus();
   },
 };

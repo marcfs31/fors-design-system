@@ -12,7 +12,7 @@ description: >-
 # Versioning & releasing the Fors design system
 
 Managed with [Changesets](https://github.com/changesets/changesets). Published to
-GitHub Packages (`@marcfs31/design-system`). Consumers pin a version, so the
+GitHub Packages (`@marcfs31/fors-design-system`). Consumers pin a version, so the
 version number and the tag history are a contract.
 
 ## 1. Does this change need a changeset?

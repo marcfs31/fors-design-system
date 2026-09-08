@@ -23,12 +23,12 @@ Related skills: **`testing`** (the full test pyramid + per-change checklist),
 
 For a component named `Thing`, create all of:
 
-| File                               | Purpose                                                                                         |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `src/components/Thing.tsx`         | the component                                                                                   |
-| `src/components/Thing.stories.tsx` | 2–5 realistic named-export stories                                                              |
-| `src/components/Thing.test.tsx`    | behavior + keyboard + `axe` tests                                                               |
-| `src/index.ts`                     | add the `export { Thing, type ThingProps }` line (keep alphabetical-ish grouping already there) |
+| File                               | Purpose                                                                                                                                                                                     |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/Thing.tsx`         | the component                                                                                                                                                                               |
+| `src/components/Thing.stories.tsx` | 2–5 realistic named-export stories; `title: "Fors/<Category>/Thing"` — Typography, Forms, Overlays, Feedback, Data Display, or Navigation (sidebar order is set in `.storybook/preview.ts`) |
+| `src/components/Thing.test.tsx`    | behavior + keyboard + `axe` tests                                                                                                                                                           |
+| `src/index.ts`                     | add the `export { Thing, type ThingProps }` line (keep alphabetical-ish grouping already there)                                                                                             |
 
 Then `npx changeset` → **minor** bump, summary describing the new component (that text becomes the CHANGELOG entry).
 
@@ -80,7 +80,7 @@ size). The component-authoring minimum:
 - **`play` interaction test** on a story for any user flow jsdom can't drive well (overlay open/close, keyboard nav, form submit) — `expect`/`userEvent`/`within` from `@storybook/test`; the Storybook test runner executes it in real Chromium and also render-smokes + full-axes every story.
 - **New color pairing** → add the fg/bg pair to `src/tokens/__tests__/contrast.test.ts`.
 - **New component** → add its name to `EXPECTED_COMPONENT_EXPORTS` in `scripts/smoke-test.mjs`.
-- Run `npx vitest run src/components/Thing.test.tsx src/__tests__/dom-snapshot.test.tsx` — green before moving on. Coverage thresholds (95/95/85/80) are enforced by `npm run test:coverage`.
+- Run `npx vitest run src/components/Thing.test.tsx src/__tests__/dom-snapshot.test.tsx` — green before moving on. Coverage thresholds (98/98/85/85 statements/lines/branches/functions, see `vitest.config.ts`) are enforced by `npm run test:coverage`.
 
 ## 6. Adding a new design token (only if genuinely unavoidable)
 

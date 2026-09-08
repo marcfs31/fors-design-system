@@ -4,7 +4,7 @@ import { Input } from "./Input";
 import { Checkbox } from "./Checkbox";
 
 const meta: Meta<typeof Label> = {
-  title: "Fors/Label",
+  title: "Fors/Typography/Label",
   component: Label,
 };
 export default meta;

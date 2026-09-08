@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
 
+# CI never writes to the repo — pin the token to read-only.
+permissions:
+  contents: read
+
 jobs:
   verify:
     name: verify (Node ${{ matrix.node }})
@@ -31,6 +35,32 @@ jobs:
       - run: npm run smoke
       - run: npx size-limit
       - run: npm run test:package # publint + are-the-types-wrong on the built package
+
+  audit:
+    name: audit (npm audit, high+)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      # High/critical advisories anywhere in the tree block the merge — fix by
+      # upgrading (or an `overrides` entry for a stuck transitive), never by
+      # ignoring. Moderate/low ones arrive as Dependabot PRs instead.
+      - run: npm audit --audit-level=high
+
+  consumer:
+    name: consumer (packed tarball in a Next.js + Tailwind v4 app)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:consumer
 
   storybook:
     name: storybook (build + a11y/render test runner)

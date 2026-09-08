@@ -4,7 +4,7 @@ import { Button } from "./Button";
 import { Badge } from "./Badge";
 
 const meta: Meta<typeof Card> = {
-  title: "Fors/Card",
+  title: "Fors/Data Display/Card",
   component: Card,
 };
 export default meta;

@@ -22,6 +22,8 @@ const distTheme = path.join(root, "dist/theme.js");
 const distThemeCjs = path.join(root, "dist/theme.cjs");
 const distStyles = path.join(root, "dist/styles.css");
 const distFonts = path.join(root, "dist/fonts.css");
+const distTailwindCss = path.join(root, "dist/tailwind.css");
+const distPreset = path.join(root, "dist/tailwind-preset.js");
 
 let failures = 0;
 function check(label, fn) {
@@ -46,6 +48,14 @@ check("dist/theme.cjs exists", () => existsSync(distThemeCjs));
 check("dist/theme.d.ts exists", () => existsSync(path.join(root, "dist/theme.d.ts")));
 check("dist/styles.css exists", () => existsSync(distStyles));
 check("dist/fonts.css exists", () => existsSync(distFonts));
+check("dist/tailwind.css exists (Tailwind v4 @theme entry)", () => existsSync(distTailwindCss));
+check("dist/tailwind-preset.js exists (Tailwind v3 preset entry)", () => existsSync(distPreset));
+check("dist/tailwind-preset.cjs exists", () =>
+  existsSync(path.join(root, "dist/tailwind-preset.cjs"))
+);
+check("dist/tailwind-preset.d.ts exists", () =>
+  existsSync(path.join(root, "dist/tailwind-preset.d.ts"))
+);
 
 const mod = await import(path.resolve(distIndex));
 const cjs = require(path.resolve(distCjs));
@@ -151,7 +161,31 @@ check("styles.css makes no network calls (no webfont @import)", () => !css.inclu
 check("styles.css is non-trivial in size", () => statSync(distStyles).size > 1000);
 
 const fontsCss = readFileSync(distFonts, "utf8");
-check("fonts.css loads the brand faces", () => fontsCss.includes("fonts.googleapis.com"));
+check("fonts.css loads the brand faces from Google Fonts", () =>
+  /@import url\("https:\/\/fonts\.googleapis\.com\/css2\?family=Inter/.test(fontsCss)
+);
+
+// The two Tailwind integration surfaces must expose the same token names —
+// a color added to one and not the other would silently diverge per consumer.
+const tailwindCss = readFileSync(distTailwindCss, "utf8");
+const preset = (await import(path.resolve(distPreset))).default;
+check("tailwind.css is a Tailwind v4 @theme block", () => /@theme inline\s*\{/.test(tailwindCss));
+check("tailwind-preset default-exports a preset with theme.extend + plugins", () => {
+  return typeof preset.theme?.extend?.colors === "object" && preset.plugins?.length === 1;
+});
+check("tailwind.css and tailwind-preset expose the same color utilities", () => {
+  const flatten = (obj, prefix = "") =>
+    Object.entries(obj).flatMap(([k, v]) =>
+      typeof v === "object"
+        ? flatten(v, `${prefix}${k}-`)
+        : [k === "DEFAULT" ? prefix.slice(0, -1) : `${prefix}${k}`]
+    );
+  const presetColors = flatten(preset.theme.extend.colors).sort();
+  const cssColors = [...tailwindCss.matchAll(/--color-([a-z0-9-]+):/g)].map((m) => m[1]).sort();
+  if (presetColors.join() !== cssColors.join())
+    throw new Error(`preset: ${presetColors.join(",")}\n    css: ${cssColors.join(",")}`);
+  return true;
+});
 
 console.log("");
 if (failures > 0) {

@@ -23,15 +23,15 @@ Published to GitHub Packages under the `@marcfs31` scope. Add to the consuming r
 `NPM_TOKEN` is a classic GitHub personal access token with `read:packages` scope — set it as an environment variable locally and in your deployment platform (e.g. a Vercel project environment variable). Then:
 
 ```bash
-npm install @marcfs31/design-system
+npm install @marcfs31/fors-design-system
 ```
 
 ## Usage
 
 ```tsx
-import { Button, Card, CardHeader, CardTitle, CardContent } from "@marcfs31/design-system";
-import "@marcfs31/design-system/styles.css";
-import "@marcfs31/design-system/fonts.css"; // optional — see Fonts below
+import { Button, Card, CardHeader, CardTitle, CardContent } from "@marcfs31/fors-design-system";
+import "@marcfs31/fors-design-system/styles.css";
+import "@marcfs31/fors-design-system/fonts.css"; // optional — see Fonts below
 
 function Example() {
   return (
@@ -47,18 +47,48 @@ function Example() {
 }
 ```
 
-Two entries:
+Package entries:
 
-- **`@marcfs31/design-system`** — the components. Every one is interactive (hooks / Radix), so the bundle ships a `"use client"` directive — usable directly inside a React Server Component tree with no wrapper.
-- **`@marcfs31/design-system/theme`** — server-safe utilities (`applyForsTheme`, `forsAntiFlashScript`, the raw palettes, `cn`). No `"use client"` — call these from a Server Component (e.g. a Next.js root layout).
+| Import                                         | What it is                                                                                                                                                                                                        |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@marcfs31/fors-design-system`                 | The components. Every one is interactive (hooks / Radix), so the bundle ships a `"use client"` directive — usable directly inside a React Server Component tree with no wrapper.                                  |
+| `@marcfs31/fors-design-system/theme`           | Server-safe utilities (`applyForsTheme`, `forsAntiFlashScript`, the raw palettes, `cn`). No `"use client"` — call these from a Server Component (e.g. a Next.js root layout).                                     |
+| `@marcfs31/fors-design-system/styles.css`      | **Required.** Design tokens + compiled component styles. Tailwind's component/utility layers only (no Preflight reset, no network calls) — safe alongside an app that runs its own Tailwind base and its own CSP. |
+| `@marcfs31/fors-design-system/tailwind.css`    | Optional, Tailwind **v4** apps: `@theme` mapping so your own markup can use the token utilities (`bg-accent`, `text-fg-muted`, `rounded-md`, …). See [Tailwind](#tailwind).                                       |
+| `@marcfs31/fors-design-system/tailwind-preset` | Optional, Tailwind **v3** apps: the same mapping as a preset for `tailwind.config`. See [Tailwind](#tailwind).                                                                                                    |
+| `@marcfs31/fors-design-system/fonts.css`       | Optional: loads the brand faces from Google Fonts. See [Fonts](#fonts).                                                                                                                                           |
 
-`styles.css` ships Tailwind's compiled component/utility layers only (no Preflight reset, no network calls) — safe alongside an app that runs its own Tailwind base and its own CSP.
+Runtime dependencies (Radix primitives, `cmdk`, `react-day-picker`, `class-variance-authority`, `tailwind-merge`) are regular `dependencies` of the package and install with it; only `react` / `react-dom` (18 or 19) are peers you provide. Tailwind is **not** required to use the components — `styles.css` is precompiled.
+
+### Tailwind
+
+The components are already styled by `styles.css`; you don't need Tailwind to use them. If your app _does_ use Tailwind and you want the Fors token vocabulary available in your own markup, add the matching integration:
+
+**Tailwind v4** — in your global stylesheet:
+
+```css
+@import "tailwindcss";
+@import "@marcfs31/fors-design-system/tailwind.css";
+```
+
+**Tailwind v3** — in `tailwind.config.ts`:
+
+```ts
+import forsPreset from "@marcfs31/fors-design-system/tailwind-preset";
+
+export default {
+  presets: [forsPreset],
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+};
+```
+
+Either way you then get `bg-ink-surface`, `text-fg-secondary`, `border-ink-border`, `bg-accent` / `text-accent-fg`, `bg-danger-subtle`, `rounded-md`, `shadow-md`, `font-heading`, and so on — every value resolves through the `--fors-*` custom properties, so it follows the [theme switch](#theming) at runtime. (Tailwind v4 has no duration namespace; use `duration-[var(--fors-duration-fast)]` / `duration-[var(--fors-duration-base)]` for the motion tokens.)
 
 ### Fonts
 
 `styles.css` references the brand families (`Inter`, `Space Grotesk`) by name but doesn't load them — nothing in the shipped CSS makes a network call. Provide the faces yourself:
 
-- **Quickest**: `import "@marcfs31/design-system/fonts.css"` — loads both from Google Fonts.
+- **Quickest**: `import "@marcfs31/fors-design-system/fonts.css"` — loads both from Google Fonts.
 - **Next.js / production**: use `next/font` and point the tokens at it (see [Using with Next.js](#using-with-nextjs)).
 - **Self-hosted**: set `--fors-font-sans` / `--fors-font-heading` on `:root` to your own stack — every component reads the font through those two CSS variables.
 
@@ -69,7 +99,7 @@ Without any of the above, text falls back to `system-ui` — never invisible, ju
 Dark is the default — nothing to configure. For an app that also needs light mode, import the theme utilities from the **server-safe entry** and own the switcher/persistence yourself:
 
 ```tsx
-import { applyForsTheme, forsAntiFlashScript } from "@marcfs31/design-system/theme";
+import { applyForsTheme, forsAntiFlashScript } from "@marcfs31/fors-design-system/theme";
 
 // In your root layout's <head>, before hydration:
 <script dangerouslySetInnerHTML={{ __html: forsAntiFlashScript() }} />;
@@ -84,8 +114,8 @@ App Router, Server Components, `next/font` — all supported.
 
 ```tsx
 // app/layout.tsx (Server Component — no "use client" needed here)
-import "@marcfs31/design-system/styles.css";
-import { forsAntiFlashScript } from "@marcfs31/design-system/theme";
+import "@marcfs31/fors-design-system/styles.css";
+import { forsAntiFlashScript } from "@marcfs31/fors-design-system/theme";
 import { Inter, Space_Grotesk } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -117,14 +147,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 Then use components anywhere — in a Server Component tree directly, or in your own `"use client"` files:
 
 ```tsx
-import { Button } from "@marcfs31/design-system";
+import { Button } from "@marcfs31/fors-design-system";
 
 export default function Page() {
   return <Button>Deploy</Button>; // no "use client" needed in this file
 }
 ```
 
-Don't add `import "@marcfs31/design-system/fonts.css"` alongside `next/font` — that would load the same families twice, once render-blocking from Google and once self-hosted.
+Don't add `import "@marcfs31/fors-design-system/fonts.css"` alongside `next/font` — that would load the same families twice, once render-blocking from Google and once self-hosted.
 
 ## Development
 
@@ -133,8 +163,19 @@ npm install
 npm run storybook       # component playground at localhost:6006
 npm test                # unit + accessibility + token-contrast tests
 npm run typecheck
-npm run build            # dist/{index,theme}.{js,cjs,d.ts,d.cts} + dist/{styles,fonts}.css
+npm run build            # dist/{index,theme,tailwind-preset}.{js,cjs,d.ts,d.cts} + dist/{styles,tailwind,fonts}.css
 npm run build-storybook  # static Storybook build
+```
+
+Package-level checks (all run in CI):
+
+```bash
+npm run smoke          # imports the built dist/ and checks the public API + shipped CSS
+npm run test:package   # publint + are-the-types-wrong on the packed tarball (ESM/CJS/types resolution)
+npm run test:consumer  # packs the tarball, installs it into fixtures/next-consumer (Next.js 16 App Router,
+                       # React 19, Tailwind v4) and runs `next build` — proves the RSC boundary, the
+                       # stylesheet surviving the bundler, and the tailwind.css @theme mapping
+npm run size           # bundle-size budget
 ```
 
 ## Releasing
@@ -150,7 +191,7 @@ git push --follow-tags
 
 ## Component set
 
-Typography: `Heading`, `Text`. Forms: `Button` (with a built-in `loading` state), `Input`, `Textarea`, `Checkbox`, `RadioGroup`, `Switch`, `Select`, `Slider`. Overlays: `Dialog`, `DropdownMenu`, `Popover`, `Tooltip`, `Toast`/`Toaster`/`useToast`. Feedback & data: `Alert`, `Badge`, `Avatar`/`AvatarGroup`, `Spinner`, `Progress`, `Skeleton`, `Card`, `Table`, `Tabs`, `Accordion`. Navigation: `Breadcrumb`, `Pagination`.
+Typography: `Heading`, `Text`, `Label`. Forms: `Button` (with a built-in `loading` state), `Input`, `Textarea`, `Checkbox`, `RadioGroup`, `Switch`, `Select`, `Slider`, `Calendar`/`DatePicker`. Overlays: `Dialog`, `DropdownMenu`, `Popover`, `Tooltip`, `Toast`/`Toaster`/`useToast`, `Command`/`CommandDialog` (command palette). Feedback & data: `Alert`, `Badge`, `Avatar`/`AvatarGroup`, `Spinner`, `Progress`, `Skeleton`, `Card`, `Table`, `Tabs`, `Accordion`, `Collapsible`, `Separator`. Navigation & layout: `Breadcrumb`, `Pagination`, `Sidebar`/`AppShell` (page shell with `SidebarProvider`/`useSidebar`). Every component supports `dir="rtl"`.
 
 Overlay/select components are built on [Radix UI](https://www.radix-ui.com/) primitives for correct focus management and keyboard behavior; every component ships fully unstyled from Radix and is styled entirely through this repo's Tailwind token vocabulary. Open/close motion for every overlay comes from `tailwindcss-animate`, driven by Radix's own `data-state`/`data-side` attributes, and automatically collapses under `prefers-reduced-motion`.
 

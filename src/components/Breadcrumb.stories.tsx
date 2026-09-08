@@ -9,7 +9,7 @@ import {
 } from "./Breadcrumb";
 
 const meta: Meta = {
-  title: "Fors/Breadcrumb",
+  title: "Fors/Navigation/Breadcrumb",
 };
 export default meta;
 type Story = StoryObj;

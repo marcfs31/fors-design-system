@@ -4,7 +4,18 @@ import reactHooks from "eslint-plugin-react-hooks";
 import prettierConfig from "eslint-config-prettier";
 
 export default tseslint.config(
-  { ignores: ["dist", "storybook-static", "node_modules", ".storybook"] },
+  {
+    // .claude/worktrees holds throwaway git worktrees (full repo copies with
+    // their own node_modules) created by Claude Code sessions — never lint them.
+    ignores: [
+      "dist",
+      "storybook-static",
+      "node_modules",
+      ".storybook",
+      ".claude/worktrees",
+      "fixtures/**/.next",
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
