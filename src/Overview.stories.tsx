@@ -707,3 +707,17 @@ function KitchenSink() {
 export const Kitchen: Story = {
   render: () => <KitchenSink />,
 };
+
+/**
+ * The same page under `dir="rtl"` — the fastest whole-system check that
+ * logical-property/`rtl:` conversions actually hold together, the same
+ * role `Kitchen` plays for the light/dark themes. Verify at 375px and
+ * desktop, same as `Kitchen`.
+ */
+export const KitchenSinkRTL: Story = {
+  render: () => (
+    <div dir="rtl">
+      <KitchenSink />
+    </div>
+  ),
+};

@@ -20,8 +20,15 @@ export const Switch = React.forwardRef<
   >
     <SwitchPrimitive.Thumb
       className={cn(
-        "block h-4 w-4 translate-x-1 rounded-full bg-fg transition-transform duration-base",
-        "data-[state=checked]:translate-x-6 data-[state=checked]:bg-accent-fg"
+        "block h-4 w-4 rounded-full bg-fg transition-transform duration-base",
+        // The thumb travels toward the logical end (right in LTR, left in
+        // RTL) when checked. `translateX` is always a physical pixel
+        // offset — Tailwind has no logical translate utility — so both
+        // directions need their own explicit, sign-flipped value rather
+        // than relying on one to fall through as a default.
+        "ltr:translate-x-1 rtl:-translate-x-1",
+        "ltr:data-[state=checked]:translate-x-6 rtl:data-[state=checked]:-translate-x-6",
+        "data-[state=checked]:bg-accent-fg"
       )}
     />
   </SwitchPrimitive.Root>

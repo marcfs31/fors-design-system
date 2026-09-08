@@ -71,13 +71,13 @@ export function AvatarGroup({ className, max, children, ...props }: AvatarGroupP
   return (
     <div className={cn("flex items-center", className)} {...props}>
       {visible.map((child, i) => (
-        <div key={i} className={cn("rounded-full ring-2 ring-ink-bg", i > 0 && "-ml-2")}>
+        <div key={i} className={cn("rounded-full ring-2 ring-ink-bg", i > 0 && "-ms-2")}>
           {child}
         </div>
       ))}
       {overflow > 0 && (
         <div
-          className="-ml-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-surface-2 font-heading text-sm font-medium text-fg-secondary ring-2 ring-ink-bg"
+          className="-ms-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-surface-2 font-heading text-sm font-medium text-fg-secondary ring-2 ring-ink-bg"
           role="img"
           aria-label={`${overflow} more`}
         >

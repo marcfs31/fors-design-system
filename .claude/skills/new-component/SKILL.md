@@ -39,6 +39,7 @@ Then `npx changeset` → **minor** bump, summary describing the new component (t
 - **`cn()` from `../lib/cn`** for all class composition. Never string-concatenate classes.
 - **Verbose JSDoc on the exported component** — say _when to use which variant_, and note any composition requirement (needs a provider, must wrap a parent, etc.). This becomes the Storybook description and, later, the design-agent-facing doc.
 - **Token classes only.** Allowed vocabulary: `bg-ink-{bg,surface,surface-2,border,border-subtle}`, `text-fg{,-secondary,-muted}`, `border-ink-{border,border-subtle}`, `bg-accent{,-hover,-active,-subtle}` / `text-accent{,-fg}`, `bg-spark*` / `text-spark*`, `bg-danger*`/`text-danger*` and the `success`/`warning` equivalents, `shadow-{sm,md,lg,focus-ring}`, `rounded-{sm,md,lg,xl}`, `duration-{fast,base}`, `font-{heading,sans,mono}`. **No raw hex, ever.** No new Tailwind config keys.
+- **Logical properties, not physical ones**, for anything direction-sensitive: `text-start`/`text-end` (not `-left`/`-right`), `ms-*`/`me-*`/`ps-*`/`pe-*` (not `ml-*`/`mr-*`/`pl-*`/`pr-*`), `start-*`/`end-*` (not `left-*`/`right-*`), `border-s`/`border-e` (not `border-l`/`border-r`). A `translateX` needs explicit `ltr:`/`rtl:`-scoped values instead — see `Switch.tsx`. See CONTRIBUTING.md's "RTL" section.
 - **Overlays / positioned components** (anything that opens on click or hover — menus, dialogs, tooltips, popovers, comboboxes): build on a **Radix UI primitive**, restyle with token classes, and add `POPPER_ANIMATION_CLASSES` from `../lib/animation` to the content element. See `Popover.tsx` / `DropdownMenu.tsx`. Do not hand-roll focus trapping / dismiss / positioning.
 - **Compound components** (`Thing.Root` / `Thing.List` / `Thing.Item`…): if Radix has it, use Radix. If you must hand-roll (see `Tabs.tsx`), implement the **full** WAI-ARIA pattern for that widget — roles, `id`↔`aria-controls`/`aria-labelledby` wiring, roving `tabIndex`, and the arrow-key/Home/End keyboard model.
 
@@ -107,6 +108,6 @@ npm run build-storybook
 npm run storybook & npm run test:storybook   # real-browser render smoke + full axe + play tests
 ```
 
-Then verify visually in Storybook at mobile (375px) and desktop, in **both** themes (Theme toolbar), plus the `Fors/Overview` "Kitchen" story if the component belongs there.
+Then verify visually in Storybook at mobile (375px) and desktop, in **both** themes (Theme toolbar) and **both** directions (Direction toolbar), plus the `Fors/Overview` "Kitchen"/"KitchenSinkRTL" stories if the component belongs there.
 
 **Versioning** (see the `release` skill): `npx changeset` → **minor** for a new component; commit the `.changeset/*.md` with the code. The version bump + tag is a separate release step.

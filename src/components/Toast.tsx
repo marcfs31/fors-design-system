@@ -3,6 +3,16 @@ import * as ToastPrimitive from "@radix-ui/react-toast";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
 
+// Deliberately not converted to logical properties as part of this repo's
+// RTL pass: `Toaster()` below hardcodes `swipeDirection="right"`, which
+// drives both the physical swipe-to-dismiss gesture and the matching
+// slide-out animation — a real, physical direction, not a text-direction
+// concern. The viewport's `right-0` resting position is tied to that same
+// gesture (dismissing by swiping right only reads correctly when the stack
+// sits at the right edge). Making this RTL-aware would mean deriving
+// `swipeDirection` from `dir` at runtime, which needs a direction-detection
+// mechanism this repo doesn't have yet — out of scope for a pass that's
+// otherwise pure CSS. Known gap, not an oversight.
 const toastVariants = cva(
   "pointer-events-auto relative flex w-full items-start gap-3 rounded-md border p-4 shadow-lg duration-base " +
     "data-[swipe=move]:transition-none data-[swipe=cancel]:translate-x-0 data-[swipe=end]:animate-out data-[swipe=end]:fade-out-80 " +

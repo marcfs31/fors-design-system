@@ -60,7 +60,7 @@ export const TableHead = React.forwardRef<
     ref={ref}
     scope={scope}
     className={cn(
-      "px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-fg-muted",
+      "px-4 py-2.5 text-start text-xs font-medium uppercase tracking-wide text-fg-muted",
       className
     )}
     {...props}

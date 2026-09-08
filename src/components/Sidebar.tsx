@@ -112,7 +112,7 @@ export function Sidebar({ children, label, className }: SidebarProps) {
       <nav
         aria-label={label}
         className={cn(
-          "hidden shrink-0 flex-col border-r border-ink-border bg-ink-surface transition-[width] duration-base md:flex",
+          "hidden shrink-0 flex-col border-e border-ink-border bg-ink-surface transition-[width] duration-base md:flex",
           collapsed ? "w-16" : "w-64",
           className
         )}
@@ -134,16 +134,23 @@ export function Sidebar({ children, label, className }: SidebarProps) {
               mobileTriggerRef.current?.focus();
             }}
             className={cn(
-              "fixed inset-y-0 left-0 z-50 flex w-64 max-w-[calc(100vw-3rem)] flex-col border-r border-ink-border bg-ink-surface md:hidden",
+              "fixed inset-y-0 start-0 z-50 flex w-64 max-w-[calc(100vw-3rem)] flex-col border-e border-ink-border bg-ink-surface md:hidden",
               "focus-visible:outline-none",
-              "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-out-to-left-full data-[state=open]:slide-in-from-left-full duration-base",
+              "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-base",
+              // The drawer anchors to the logical start side (left in LTR,
+              // right in RTL, matching the desktop rail's flex-row position,
+              // which flips automatically) — so which physical edge it
+              // slides to/from has to flip explicitly too; `start`/`end`
+              // have no slide-animation equivalent in tailwindcss-animate.
+              "ltr:data-[state=closed]:slide-out-to-left-full ltr:data-[state=open]:slide-in-from-left-full",
+              "rtl:data-[state=closed]:slide-out-to-right-full rtl:data-[state=open]:slide-in-from-right-full",
               className
             )}
           >
             {children}
             <DialogPrimitive.Close
               aria-label="Close navigation"
-              className={cn(SIDEBAR_ICON_BUTTON_CLASS, "absolute right-2 top-2")}
+              className={cn(SIDEBAR_ICON_BUTTON_CLASS, "absolute end-2 top-2")}
             >
               {CLOSE_ICON}
             </DialogPrimitive.Close>

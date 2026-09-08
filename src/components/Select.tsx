@@ -36,7 +36,7 @@ export const SelectTrigger = React.forwardRef<
         viewBox="0 0 12 12"
         fill="none"
         aria-hidden="true"
-        className="ml-2 shrink-0 text-fg-muted"
+        className="ms-2 shrink-0 text-fg-muted"
       >
         <path
           d="M3 4.5L6 7.5L9 4.5"
@@ -80,7 +80,7 @@ export const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-3 pr-8 text-sm font-sans text-fg outline-none",
+      "relative flex cursor-pointer select-none items-center rounded-sm py-1.5 ps-3 pe-8 text-sm font-sans text-fg outline-none",
       "data-[highlighted]:bg-ink-surface-2 data-[highlighted]:text-accent",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
@@ -88,7 +88,7 @@ export const SelectItem = React.forwardRef<
     {...props}
   >
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-    <SelectPrimitive.ItemIndicator className="absolute right-2 flex items-center">
+    <SelectPrimitive.ItemIndicator className="absolute end-2 flex items-center">
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
         <path
           d="M1.5 5L4 7.5L8.5 2.5"

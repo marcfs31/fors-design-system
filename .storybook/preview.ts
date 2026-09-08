@@ -25,9 +25,22 @@ const preview: Preview = {
         dynamicTitle: true,
       },
     },
+    dir: {
+      description: "Text direction",
+      toolbar: {
+        title: "Direction",
+        icon: "transfer",
+        items: [
+          { value: "ltr", title: "LTR", icon: "arrowright" },
+          { value: "rtl", title: "RTL", icon: "arrowleft" },
+        ],
+        dynamicTitle: true,
+      },
+    },
   },
   initialGlobals: {
     theme: "dark",
+    dir: "ltr",
   },
   parameters: {
     backgrounds: { disable: true },
@@ -41,6 +54,7 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       document.documentElement.setAttribute("data-theme", context.globals.theme ?? "dark");
+      document.documentElement.dir = context.globals.dir ?? "ltr";
       return React.createElement(Story);
     },
   ],

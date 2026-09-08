@@ -30,7 +30,7 @@ export const AccordionTrigger = React.forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex flex-1 items-center justify-between py-4 text-left font-sans text-sm font-medium text-fg transition-colors duration-base hover:text-accent",
+        "flex flex-1 items-center justify-between py-4 text-start font-sans text-sm font-medium text-fg transition-colors duration-base hover:text-accent",
         "[&[data-state=open]>svg]:rotate-180",
         className
       )}
@@ -43,7 +43,7 @@ export const AccordionTrigger = React.forwardRef<
         viewBox="0 0 12 12"
         fill="none"
         aria-hidden="true"
-        className="ml-2 shrink-0 text-fg-muted transition-transform duration-base"
+        className="ms-2 shrink-0 text-fg-muted transition-transform duration-base"
       >
         <path
           d="M3 4.5L6 7.5L9 4.5"

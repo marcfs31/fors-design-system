@@ -43,7 +43,7 @@ export const DialogContent = React.forwardRef<
       {!hideClose && (
         <DialogPrimitive.Close
           aria-label="Close"
-          className="absolute right-4 top-4 flex min-h-10 min-w-10 items-center justify-center rounded-sm text-fg-muted transition-colors duration-base hover:text-fg focus-visible:outline-none focus-visible:shadow-focus-ring"
+          className="absolute end-4 top-4 flex min-h-10 min-w-10 items-center justify-center rounded-sm text-fg-muted transition-colors duration-base hover:text-fg focus-visible:outline-none focus-visible:shadow-focus-ring"
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <path
@@ -61,7 +61,7 @@ export const DialogContent = React.forwardRef<
 DialogContent.displayName = "DialogContent";
 
 export function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("mb-4 flex flex-col gap-1.5 pr-6", className)} {...props} />;
+  return <div className={cn("mb-4 flex flex-col gap-1.5 pe-6", className)} {...props} />;
 }
 
 export const DialogTitle = React.forwardRef<

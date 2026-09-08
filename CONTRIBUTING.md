@@ -70,6 +70,13 @@ Every component needs, at minimum:
 - No `whitespace-nowrap` on user content; add `min-w-0` to growable flex children.
 - Verify in Storybook at 375px and desktop, in **both** themes — the `Fors/Overview` "Kitchen" story is the fastest whole-system check.
 
+### RTL (`dir="rtl"`)
+
+- Use logical properties, not physical ones: `text-start`/`text-end` (not `text-left`/`text-right`), `ms-*`/`me-*`/`ps-*`/`pe-*` (not `ml-*`/`mr-*`/`pl-*`/`pr-*`), `start-*`/`end-*` (not `left-*`/`right-*`), `border-s`/`border-e` (not `border-l`/`border-r`). `justify-start`/`justify-end` and flex/grid item order are already logical — no change needed there.
+- `translateX`/`translateY` have no logical equivalent — anything that moves an element sideways (a toggle thumb, a slide-in animation) needs explicit `ltr:`/`rtl:`-scoped values, verified by real rendered position (`getBoundingClientRect`), not `toHaveClass` — both direction's classes are always present in the DOM regardless of which one's CSS actually wins. See `Switch.tsx`'s thumb and its `Fors/Switch` "RTL" story for the pattern.
+- Centering (`left-1/2 -translate-x-1/2`) and Radix's own Popper positioning (`POPPER_ANIMATION_CLASSES`'s `data-[side=...]`, which reads viewport-relative collision detection, not text direction) need no changes.
+- Verify in Storybook with the toolbar's Direction toggle (or a `<div dir="rtl">` wrapper, for a fixed comparison in one story) at 375px and desktop, in both themes — `Fors/Overview` → "KitchenSinkRTL" is the whole-system check, mirroring "Kitchen".
+
 Overlay or positioned components (anything opening on click/hover — dialogs, menus, tooltips, popovers) should be built on a Radix UI primitive rather than hand-rolled — see any existing overlay component (`Dialog.tsx`, `Popover.tsx`) for the pattern: unstyled Radix primitive + this repo's Tailwind token classes + `POPPER_ANIMATION_CLASSES` from `src/lib/animation.ts` for open/close motion.
 
 **Testing overlay components (Dialog, DropdownMenu, Popover, Tooltip, Select):** keep jsdom tests **structural and fast** — render with `defaultOpen` and assert roles / props / classes. Do **not** run `axe()` on an _open_ overlay in jsdom: with no layout engine it takes minutes and times out on CI. Open-state accessibility and real open/close interaction are covered by the Storybook test runner in real Chromium (`npm run test:storybook`) via the component's stories and `play` functions. `axe()` in a `*.test.tsx` is for **inline** components. See `.claude/skills/testing`.
