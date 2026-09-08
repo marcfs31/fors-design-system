@@ -1,0 +1,63 @@
+name: Republish tag
+
+# Maintenance: publish an already-tagged version under the package's
+# *current* name. Exists because the package was renamed at v2.0.0
+# (@marcfs31/design-system → @marcfs31/fors-design-system) and GitHub
+# Packages cannot rename a package — the 1.x history is re-published under
+# the new name instead. Nothing is rebuilt from a moving branch: each run
+# checks out the exact release tag, only swaps the `name` field, builds and
+# smoke-tests that tag's own code, then publishes it under `dist_tag` so the
+# `latest` dist-tag is never moved off the current release.
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: "Space-separated release tags to republish (e.g. 'v1.3.0 v1.4.0 v1.4.1')"
+        required: true
+      dist_tag:
+        # npm rejects any tag that parses as a SemVer range ("v1", "1.x"), so
+        # the default is a plain word.
+        description: "npm dist-tag for these versions — a plain word, never 'latest' for old versions"
+        required: true
+        default: "legacy"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  republish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          scope: "@marcfs31"
+      # The package's current name comes from main, not from the old tag.
+      - id: current
+        run: echo "name=$(node -p "require('./package.json').name")" >> "$GITHUB_OUTPUT"
+      - name: Build and publish each tag
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DIST_TAG: ${{ inputs.dist_tag }}
+          NAME: ${{ steps.current.outputs.name }}
+        run: |
+          set -euo pipefail
+          if [ "$DIST_TAG" = "latest" ]; then
+            echo "refusing to republish under 'latest'"; exit 1
+          fi
+          for tag in ${{ inputs.tags }}; do
+            echo "::group::$tag"
+            git checkout -q --detach "$tag"
+            npm ci --no-audit --no-fund
+            npm pkg set name="$NAME"
+            npm run build
+            npm run smoke
+            npm publish --tag "$DIST_TAG"
+            git checkout -q -- package.json
+            echo "::endgroup::"
+          done

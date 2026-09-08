@@ -47,7 +47,7 @@ jobs:
       # workflow's own GITHUB_TOKEN (same-repo publish needs no separate
       # PAT/secret; see NODE_AUTH_TOKEN below) — and tags + creates a
       # GitHub Release for what it published.
-      - uses: changesets/action@v1
+      - uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1
         id: changesets
         with:
           version: npm run version-packages
@@ -58,15 +58,28 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # The version PR is pushed with GITHUB_TOKEN, and GitHub does not start
-      # push/pull_request workflows for such commits — so none of the status
-      # checks `main` requires would ever appear and the PR could never merge.
-      # workflow_dispatch is the documented exception: dispatch CI and CodeQL
-      # on the version branch so its checks run against the bumped state.
-      - name: Run required checks on the version PR
+      # The version PR is authored by github-actions[bot], which the repo's
+      # workflow-approval policy ("first_time_contributors") treats as an
+      # outside contributor: its pull_request runs are created but parked in
+      # `action_required`, so the status checks `main` requires never report
+      # and the PR can't merge. Approve those runs (same as the "Approve and
+      # run" button) so the normal pull_request checks run against the bumped
+      # state. Retries because the runs are created shortly after the push.
+      - name: Approve the version PR's workflow runs
         if: steps.changesets.outputs.hasChangesets == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh workflow run ci.yml --ref changeset-release/main
-          gh workflow run codeql.yml --ref changeset-release/main
+          for attempt in 1 2 3 4 5 6; do
+            runs=$(gh run list --branch changeset-release/main --event pull_request \
+              --status action_required --json databaseId --jq '.[].databaseId')
+            if [ -n "$runs" ]; then
+              for id in $runs; do
+                echo "approving run $id"
+                gh api -X POST "repos/${GITHUB_REPOSITORY}/actions/runs/${id}/approve"
+              done
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "no parked pull_request runs found for changeset-release/main"

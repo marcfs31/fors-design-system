@@ -4,10 +4,6 @@ on:
   push:
     branches: [main]
   pull_request:
-  # Dispatched by the Release workflow on the changesets version branch:
-  # commits pushed with the workflow's GITHUB_TOKEN never trigger
-  # push/pull_request runs, and main requires these checks to merge.
-  workflow_dispatch:
 
 # CI never writes to the repo — pin the token to read-only.
 permissions:
