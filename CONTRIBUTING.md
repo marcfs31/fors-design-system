@@ -34,6 +34,33 @@ used `fs.promises.glob`, added in Node 22.13, and broke the Node 20 CI job
 even though it worked locally on a newer Node). `nvm use` before testing a
 bump.
 
+## Testing policy
+
+Every change lands with the test that would have caught it breaking. The layers, what each one catches, and the per-change checklist live in the `testing` skill (`.claude/skills/testing/SKILL.md`); the policy is:
+
+- **Coverage is a floor, not a target.** `npm run test:coverage` enforces 98% statements/lines, 85% branches/functions (`vitest.config.ts`). New source files under `src/` are covered by a test that asserts something real about them — never by an `exclude` entry. The thresholds only ever go up.
+- **Every public surface has a proof at its own layer.** Component behavior and accessibility → co-located `*.test.tsx` (`vitest-axe`). Rendered DOM → `src/__tests__/dom-snapshot.test.tsx`. Color pairings → `src/tokens/__tests__/contrast.test.ts`. Real-browser render + axe + `play` flows → Storybook test runner. The built artifact → `npm run smoke`. Package resolution → `npm run test:package`. A real consumer app → `npm run test:consumer`. Bundle size → `npm run size`.
+- **Green everywhere before merge.** All of the above run in CI and are required status checks on `main` — a PR cannot merge with a red or stale check, and admins are not exempt.
+
+## Regression policy
+
+- **A bug fix ships with a failing-then-passing test** that reproduces the reported behavior at the narrowest layer that owns it. The commit message names the symptom.
+- **When a check fails, find out why before touching anything.** Read the failing step's log (`gh run view <run-id> --log-failed`), reproduce locally with the same command, and trace the symptom to the mechanism that owns it. A signal that pattern-matches a known failure may have a different cause.
+- **Fix the cause, never the signal.** Do not delete or skip a test, raise a timeout, lower a threshold, add a lint/CodeQL suppression, or ignore an advisory to turn a check green. If a check is genuinely wrong, fix the check in its own commit and say why. If the correct fix is out of scope, the PR waits — a red check is information, not an obstacle.
+- **Don't change what isn't broken.** A fix touches the narrowest layer that owns the incorrect behavior and preserves unrelated behavior. Cleanup, renames and refactors go in their own PR.
+- **Snapshots are reviewed, not rubber-stamped.** A DOM-snapshot diff is either an intended change (explained in the changeset) or a regression — update snapshots only after reading the diff.
+- **Consumers are the last line.** Anything a consumer can observe (exports, props, tokens, CSS, the `"use client"` boundary) is covered by `npm run test:consumer` against a packed tarball; a change that alters what ships also gets a changeset (see [Versioning](#versioning)).
+
+## Security & code-quality policy
+
+Enforced with GitHub's own tooling; the settings side is summarized in [SECURITY.md](SECURITY.md#how-this-repo-is-protected).
+
+- **Findings are fixed at the source.** A CodeQL alert (`security-and-quality` suite), a Dependabot alert, or an `npm audit` high/critical is resolved by changing the code or upgrading the dependency — not by dismissing the alert or adding an ignore. When a transitive dependency is stuck behind a major upgrade its parent hasn't made, pin it with an `overrides` entry in `package.json` and verify the full gate still passes.
+- **Every workflow declares `permissions:`** for its `GITHUB_TOKEN`, read-only unless the job needs more (release: publish + PR; Pages deploy; CodeQL: `security-events: write`).
+- **Dependencies update weekly** via Dependabot (`.github/dependabot.yml`), grouped where a family moves together (Radix, Storybook). Majors listed under `ignore` need a deliberate migration PR.
+- **`main` is protected**: required checks (CI matrix, consumer, storybook, audit, both CodeQL analyses) must pass on the up-to-date branch, history is linear, force-pushes and deletions are blocked, and the rules apply to admins. Auto-merge is enabled so a PR merges itself once — and only once — everything is green.
+- **Secrets never enter the repo.** Secret scanning with push protection rejects a pushed credential; publishing uses the workflow's own `GITHUB_TOKEN`, so no long-lived token is stored anywhere.
+
 ## Adding or changing a component
 
 > Working with Claude Code in this repo? Two project skills encode everything
