@@ -125,6 +125,11 @@ const EXPECTED_COMPONENT_EXPORTS = [
   "CommandDialog",
   "Calendar",
   "DatePicker",
+  "SidebarProvider",
+  "Sidebar",
+  "SidebarTrigger",
+  "AppShell",
+  "AppShellMain",
 ];
 
 for (const name of EXPECTED_COMPONENT_EXPORTS) {

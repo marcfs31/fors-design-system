@@ -18,10 +18,25 @@ import { injectAxe, checkA11y } from "axe-playwright";
  * Per-story escape hatches mirror the `@storybook/addon-a11y` parameter shape:
  *   parameters: { a11y: { disable: true } }
  *   parameters: { a11y: { options: { rules: { region: { enabled: false } } } } }
+ *
+ * A story can also request a real browser viewport size before its `play`
+ * function runs — needed for anything gated by a CSS breakpoint (a mobile
+ * drawer that's `md:hidden`, say), since `play` itself has no access to the
+ * Playwright `page` to resize it:
+ *   parameters: { viewport: { width: 390, height: 844 } }
+ * Always explicitly resets to the default otherwise — the test runner can
+ * reuse one browser page across every story in a file, so a size set by one
+ * story would otherwise leak into whichever runs next.
  */
+const DEFAULT_VIEWPORT = { width: 1280, height: 720 };
+
 const config: TestRunnerConfig = {
-  async preVisit(page) {
+  async preVisit(page, context) {
     await page.emulateMedia({ reducedMotion: "reduce" });
+    const storyContext = await getStoryContext(page, context);
+    const viewport = storyContext.parameters?.viewport as
+      { width: number; height: number } | undefined;
+    await page.setViewportSize(viewport ?? DEFAULT_VIEWPORT);
   },
   async postVisit(page, context) {
     const storyContext = await getStoryContext(page, context);

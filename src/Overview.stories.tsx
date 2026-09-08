@@ -69,6 +69,17 @@ import {
   CommandItem,
 } from "./components/Command";
 import { DatePicker } from "./components/Calendar";
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
+  SidebarTrigger,
+  SidebarNav,
+  SidebarNavItem,
+  AppShell,
+} from "./components/Sidebar";
 import { DARK_PALETTE, LIGHT_PALETTE } from "./tokens/palettes";
 
 const meta: Meta = {
@@ -605,6 +616,45 @@ function KitchenSink() {
               <Text size="sm" tone="muted" aria-live="polite">
                 Page {page} of {TOTAL_PAGES}
               </Text>
+            </div>
+          </Section>
+
+          <Section id="ov-shell" title="App shell">
+            {/* A contained preview, not a real full-page AppShellMain — this
+                page already has its own <main> landmark, and nesting a
+                second one would be an actual accessibility violation. See
+                Sidebar.stories.tsx's own AppShellExample for the real,
+                standalone full-page composition. */}
+            <div className="h-80 overflow-hidden rounded-lg border border-ink-border">
+              <SidebarProvider>
+                <AppShell className="h-full">
+                  <Sidebar label="Demo navigation">
+                    <SidebarHeader>
+                      <Text weight="semibold">Fors Corp</Text>
+                    </SidebarHeader>
+                    <SidebarContent>
+                      <SidebarNav>
+                        <SidebarNavItem href="#ov-shell" active>
+                          Overview
+                        </SidebarNavItem>
+                        <SidebarNavItem href="#ov-shell">Settings</SidebarNavItem>
+                      </SidebarNav>
+                    </SidebarContent>
+                    <SidebarFooter>
+                      <Text size="sm" tone="muted">
+                        v1.0
+                      </Text>
+                    </SidebarFooter>
+                  </Sidebar>
+                  <div className="min-w-0 flex-1 overflow-y-auto p-4">
+                    <SidebarTrigger />
+                    <Text className="mt-3" tone="secondary">
+                      Collapses to an icon rail on desktop, becomes a slide-in drawer below the md
+                      breakpoint.
+                    </Text>
+                  </div>
+                </AppShell>
+              </SidebarProvider>
             </div>
           </Section>
 

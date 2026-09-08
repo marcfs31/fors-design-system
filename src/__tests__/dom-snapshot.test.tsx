@@ -36,6 +36,11 @@ import {
   RadioGroup,
   RadioGroupItem,
   Separator,
+  Sidebar,
+  SidebarHeader,
+  SidebarNav,
+  SidebarNavItem,
+  SidebarProvider,
   Skeleton,
   Slider,
   Spinner,
@@ -193,6 +198,27 @@ const cases: Record<string, React.ReactElement> = {
       <CollapsibleTrigger>Show more</CollapsibleTrigger>
       <CollapsibleContent>Extra detail</CollapsibleContent>
     </Collapsible>
+  ),
+  "Sidebar/expanded": (
+    <SidebarProvider>
+      <Sidebar label="Main navigation">
+        <SidebarHeader>Fors Corp</SidebarHeader>
+        <SidebarNav>
+          <SidebarNavItem href="#a" active>
+            Overview
+          </SidebarNavItem>
+        </SidebarNav>
+      </Sidebar>
+    </SidebarProvider>
+  ),
+  "Sidebar/collapsed": (
+    <SidebarProvider defaultCollapsed>
+      <Sidebar label="Main navigation">
+        <SidebarNav>
+          <SidebarNavItem href="#a">Overview</SidebarNavItem>
+        </SidebarNav>
+      </Sidebar>
+    </SidebarProvider>
   ),
 };
 

@@ -114,5 +114,22 @@ export {
   type CalendarProps,
   type DatePickerProps,
 } from "./components/Calendar";
+export {
+  SidebarProvider,
+  useSidebar,
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
+  SidebarTrigger,
+  SidebarNav,
+  SidebarNavItem,
+  AppShell,
+  AppShellMain,
+  type SidebarContextValue,
+  type SidebarProviderProps,
+  type SidebarProps,
+  type SidebarNavItemProps,
+} from "./components/Sidebar";
 
 export { cn } from "./lib/cn";
