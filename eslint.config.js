@@ -22,7 +22,13 @@ export default tseslint.config(
     files: ["**/*.{ts,tsx}"],
     plugins: { "react-hooks": reactHooks },
     rules: {
-      ...reactHooks.configs.recommended.rules,
+      // eslint-plugin-react-hooks v7's `recommended` preset now bundles ~14
+      // additional React Compiler rules (purity, immutability, refs, etc.)
+      // enabled at "error". This project hasn't opted into the React
+      // Compiler, so keep exactly the two hooks rules this repo has always
+      // linted with instead of inheriting that preset wholesale.
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     },
   },
