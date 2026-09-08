@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { FORS_THEMES, applyForsTheme, forsAntiFlashScript } from "../index";
 
 afterEach(() => {
@@ -49,5 +49,20 @@ describe("forsAntiFlashScript", () => {
     for (const theme of FORS_THEMES) {
       expect(script).toContain(theme);
     }
+  });
+
+  it("escapes values so the script can't break out of an inline <script>", () => {
+    const script = forsAntiFlashScript({
+      storageKey: "</script><img src=x onerror=alert(1)>",
+      themes: ["dark\u2028", "light</script>"],
+    });
+    expect(script).not.toContain("</script>");
+    expect(script).not.toContain("\u2028");
+    expect(script).toContain("\\u003c/script>");
+    // Still a valid JS program whose literals round-trip to the original values.
+    const localStorage = { getItem: () => "light</script>" };
+    const documentElement = { setAttribute: vi.fn() };
+    new Function("localStorage", "document", script)(localStorage, { documentElement });
+    expect(documentElement.setAttribute).toHaveBeenCalledWith("data-theme", "light</script>");
   });
 });

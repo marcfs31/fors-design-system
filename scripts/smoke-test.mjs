@@ -161,7 +161,9 @@ check("styles.css makes no network calls (no webfont @import)", () => !css.inclu
 check("styles.css is non-trivial in size", () => statSync(distStyles).size > 1000);
 
 const fontsCss = readFileSync(distFonts, "utf8");
-check("fonts.css loads the brand faces", () => fontsCss.includes("fonts.googleapis.com"));
+check("fonts.css loads the brand faces from Google Fonts", () =>
+  /@import url\("https:\/\/fonts\.googleapis\.com\/css2\?family=Inter/.test(fontsCss)
+);
 
 // The two Tailwind integration surfaces must expose the same token names —
 // a color added to one and not the other would silently diverge per consumer.

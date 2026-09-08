@@ -33,7 +33,21 @@ export interface ForsAntiFlashOptions {
 export function forsAntiFlashScript(opts: ForsAntiFlashOptions = {}): string {
   const storageKey = opts.storageKey ?? "fors-theme";
   const themes = opts.themes ?? FORS_THEMES;
-  return `(function(){try{var t=localStorage.getItem(${JSON.stringify(storageKey)});var themes=${JSON.stringify(
+  return `(function(){try{var t=localStorage.getItem(${scriptLiteral(storageKey)});var themes=${scriptLiteral(
     themes
   )};if(t&&themes.indexOf(t)!==-1){document.documentElement.setAttribute("data-theme",t);}}catch(e){}})();`;
+}
+
+/**
+ * Serializes a value as a JS literal that is safe to inline inside a
+ * `<script>` element. `JSON.stringify` alone is not: a `<` in the value
+ * could form `</script>` and end the element early, and U+2028/U+2029 are
+ * line terminators in older JS engines. Escaping them keeps the literal
+ * valid JSON *and* inert HTML.
+ */
+function scriptLiteral(value: unknown): string {
+  return JSON.stringify(value)
+    .replace(/</g, "\\u003c")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
 }
