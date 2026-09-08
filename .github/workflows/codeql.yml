@@ -12,6 +12,7 @@ on:
     branches: [main]
   schedule:
     - cron: "45 18 * * 1" # weekly, catches newly published queries/advisories
+  workflow_dispatch: # see ci.yml — dispatched on the changesets version branch
 
 permissions:
   contents: read
