@@ -1,3 +1,17 @@
+# Standing rule: prefer Graft for codebase navigation
+
+For any task in this repo — understanding how something works, finding where
+code lives, tracing callers/callees, scoping an edit, judging a diff's blast
+radius, or onboarding to an unfamiliar area — reach for a `graft` tool/skill
+first (`graft ask`, `graft grep`, `graft skeleton`, `graft callers`, `graft
+map`, or their MCP equivalents when the graft MCP server is connected) before
+raw `grep`/`Read`/`Glob`. This is Marc's explicit preference, not just a
+convenience default: prefer graft whenever the task is one it can answer, and
+fall back to raw tools only when graft's own guidance says to (a truncated
+span, a file it doesn't index, a stale/missing path, or a genuinely weak hit)
+— see `.claude/skills/graft/SKILL.md` for the full tool reference and when to
+fall back.
+
 # Standing rule: Dependabot / security / code-quality auto-fix mandate
 
 Marc has authorized continuous, unattended work on this repo's Dependabot PRs,
