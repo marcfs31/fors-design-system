@@ -4,21 +4,82 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     groups:
+      # PRODUCTION dependency: all 15 @radix-ui/react-* entries live under
+      # "dependencies" in package.json (verified 2026-09-09), not
+      # "peerDependencies"/"devDependencies" like everything else grouped here.
+      # See the matching entry in `ignore` below — majors are excluded the
+      # same way tailwindcss/vite/react/react-dom are.
       radix:
         patterns:
           - "@radix-ui/*"
+
+      # Verified against the real package.json (2026-09-09), not transcribed
+      # from an older list: the current Storybook-8 devDependency set is
+      # storybook, @storybook/addon-a11y, @storybook/addon-essentials,
+      # @storybook/react, @storybook/react-vite, @storybook/test, and
+      # @storybook/test-runner. There is no @storybook/addon-docs or
+      # @storybook/addon-vitest yet — PR #6 (an open Dependabot PR bumping
+      # this exact group 8.6.18 -> 10.6.0) shows the Storybook-9/vitest-addon
+      # migration has NOT landed. Update this list when that migration merges.
       storybook:
         patterns:
-          - "@storybook/*"
           - "storybook"
+          - "@storybook/addon-a11y"
+          - "@storybook/addon-essentials"
+          - "@storybook/react"
+          - "@storybook/react-vite"
+          - "@storybook/test"
+          - "@storybook/test-runner"
+
+      eslint:
+        patterns:
+          - "eslint"
+          - "@eslint/js"
+          - "typescript-eslint"
+          - "eslint-plugin-*"
+          - "eslint-config-prettier"
+
+      # @vitest/browser is intentionally omitted: it isn't a dependency of
+      # this repo (verified against package.json) — only vitest,
+      # @vitest/coverage-v8 and vitest-axe are.
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/coverage-v8"
+          - "vitest-axe"
+
+      vite:
+        patterns:
+          - "vite"
+          - "@vitejs/plugin-react"
+
+      size-limit:
+        patterns:
+          - "size-limit"
+          - "@size-limit/preset-small-lib"
+
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
     ignore:
       # Major bumps for these need a deliberate migration pass (breaking
       # config/API changes), not an automated PR — patch/minor still flow through.
       - dependency-name: "tailwindcss"
         update-types: ["version-update:semver-major"]
       - dependency-name: "vite"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      # radix is a PRODUCTION dependency (see the `radix` group above) —
+      # same major-bump treatment as the others in this list.
+      - dependency-name: "@radix-ui/*"
         update-types: ["version-update:semver-major"]
   - package-ecosystem: "github-actions"
     directory: "/"

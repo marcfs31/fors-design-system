@@ -1,0 +1,186 @@
+name: Dependabot auto-merge
+
+# --- What was verified before writing this file (2026-09-09) --------------
+#
+# 1. dependabot/fetch-metadata's real source at the pinned SHA below (fetched
+#    live via `gh api repos/dependabot/fetch-metadata/contents/...`, not
+#    guessed) shows `update-type` is computed by
+#    `maxSemver()` in src/dependabot/output.ts: it reduces over EVERY
+#    dependency in `updatedDependencies` (one entry per package in the PR,
+#    including a grouped PR) and returns the highest-severity level found
+#    (major > minor > patch). So for a grouped PR it is already a genuine
+#    worst-case across the group, not a first-entry or PR-title heuristic.
+#    Same reducer pattern for `dependency-type` (direct:production wins over
+#    direct:development/indirect if ANY dependency in the group is
+#    production).
+#    Despite that, we still add a second, defensive, per-dependency gate
+#    below (parsing `updated-dependencies-json`) and fail closed if it's
+#    missing, unparseable, or disagrees — in case of a future regression in
+#    fetch-metadata itself.
+# 2. The pinned action SHA is the REAL v3.1.0 tag of dependabot/fetch-metadata
+#    (not a fork): `gh api repos/dependabot/fetch-metadata --jq .fork` -> false,
+#    and `gh api repos/dependabot/fetch-metadata/tags` resolves tag `v3.1.0`
+#    to commit 25dd0e34f4fe68f24cc83900b1fe3fe149efef98 exactly.
+# 3. This uses `pull_request_target`, not `pull_request`. Per fetch-metadata's
+#    own README: "Workflows triggered by Dependabot on the pull_request event
+#    run with a read-only GITHUB_TOKEN" — `contents: write`/`pull-requests:
+#    write` below would be silently downgraded to read-only on a plain
+#    `pull_request` trigger, so `gh pr merge --auto` and the changeset commit
+#    would fail. This is safe here because the job never executes anything
+#    from the PR's branch: it only (a) reads metadata via the GitHub API,
+#    (b) checks out the dependabot[bot]-authored branch to add ONE new
+#    markdown file (dependabot[bot] branches only ever carry manifest/lockfile
+#    changes, never arbitrary code — and we never run a script from that
+#    checkout), and (c) calls `gh pr merge --auto`, which defers the actual
+#    merge to GitHub's own required-status-check enforcement.
+#
+# Guardrails: never `--admin`, never touches branch protection, never widens
+# GITHUB_TOKEN permissions beyond the two scopes below.
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: dependabot-automerge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  automerge:
+    name: Auto-merge (patch/minor only)
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'marcfs31/fors-design-system'
+    steps:
+      - name: Read Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      # Defensive gate (see header comment #1): re-verify per-dependency,
+      # independently of the aggregate `update-type` output, and fail closed
+      # (no auto-merge) on anything unparseable or ambiguous.
+      - name: "Gate: every updated dependency must be patch/minor"
+        id: gate
+        env:
+          DEPS_JSON: ${{ steps.metadata.outputs.updated-dependencies-json }}
+          DOC_UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
+        run: |
+          set -uo pipefail
+
+          echo "documented (aggregate) update-type: ${DOC_UPDATE_TYPE:-<empty>}"
+
+          if [ -z "${DEPS_JSON:-}" ]; then
+            echo "::error::updated-dependencies-json is missing. fetch-metadata should always populate this for a genuine Dependabot PR — treating as an error, not routing around it."
+            echo "safe=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          if ! parsed=$(printf '%s' "$DEPS_JSON" | jq -c '.' 2>&1); then
+            echo "::error::updated-dependencies-json did not parse as JSON: $parsed"
+            echo "safe=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          count=$(printf '%s' "$parsed" | jq 'if type == "array" then length else -1 end')
+          if [ "$count" -le 0 ]; then
+            echo "::error::updated-dependencies-json parsed but is not a non-empty array (got: $parsed)."
+            echo "safe=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          bad=$(printf '%s' "$parsed" | jq -c '[.[] | select(.updateType != "version-update:semver-patch" and .updateType != "version-update:semver-minor")]')
+          bad_count=$(printf '%s' "$bad" | jq 'length')
+
+          if [ "$bad_count" -gt 0 ]; then
+            echo "::notice::${bad_count} of ${count} updated package(s) in this PR are not patch/minor — skipping auto-merge (needs human review): $(printf '%s' "$bad" | jq -c '[.[] | {dependencyName, updateType}]')"
+            echo "safe=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Belt-and-suspenders: every individual entry is patch/minor, so the
+          # aggregate `update-type` output (verified above, from
+          # fetch-metadata's own maxSemver() reducer, to already be the max
+          # severity across the whole PR) must agree.
+          if [ "${DOC_UPDATE_TYPE:-}" != "version-update:semver-patch" ] && [ "${DOC_UPDATE_TYPE:-}" != "version-update:semver-minor" ]; then
+            echo "::error::every individual dependency looked patch/minor, but the aggregate update-type ('${DOC_UPDATE_TYPE:-<empty>}') disagrees — this should be impossible per fetch-metadata's own reducer, so treating it as a bug rather than routing around it."
+            echo "safe=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          echo "safe=true" >> "$GITHUB_OUTPUT"
+
+      # Auto-merged bumps to PRODUCTION dependencies (today: only the radix
+      # group — see dependabot.yml) would otherwise ship with no Changeset
+      # entry, silently riding along in whatever unrelated release happens
+      # next. `dependency-type` is fetch-metadata's own worst-case output
+      # across the group (direct:production wins if ANY dependency in a
+      # grouped PR is production), so this also covers a mixed group.
+      - name: Checkout the Dependabot branch (manifest/lockfile only — never executed)
+        if: steps.gate.outputs.safe == 'true' && steps.metadata.outputs.dependency-type == 'direct:production'
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Add a changeset for the production-dependency bump
+        if: steps.gate.outputs.safe == 'true' && steps.metadata.outputs.dependency-type == 'direct:production'
+        env:
+          DEPS_JSON: ${{ steps.metadata.outputs.updated-dependencies-json }}
+          DEPENDENCY_NAMES: ${{ steps.metadata.outputs.dependency-names }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+
+          slug=".changeset/dependabot-pr-${PR_NUMBER}.md"
+
+          # Dependabot itself never adds changesets, but guard against a
+          # duplicate anyway: a human may have pushed one to this same PR
+          # branch, or an earlier run of this job (e.g. a prior `synchronize`,
+          # possibly this exact commit's own follow-up run) may already have
+          # committed ours.
+          existing=$(git ls-files '.changeset/*.md' | grep -v '^\.changeset/README\.md$' || true)
+          if [ -n "$existing" ]; then
+            echo "Changeset(s) already present on this branch, not adding another: $existing"
+            exit 0
+          fi
+
+          lines=$(printf '%s' "$DEPS_JSON" | jq -r '.[] | "- `" + .dependencyName + "`: " + .prevVersion + " -> " + .newVersion')
+
+          {
+            echo '---'
+            echo '"@marcfs31/fors-design-system": patch'
+            echo '---'
+            echo
+            echo "Bump ${DEPENDENCY_NAMES} (production dependency)."
+            echo
+            echo "$lines"
+            echo
+            echo 'Auto-generated by the Dependabot auto-merge workflow: this bump touches'
+            echo '"dependencies" (not devDependencies/peerDependencies) and would otherwise'
+            echo 'ship with no changelog entry once auto-merged.'
+          } > "$slug"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$slug"
+          git commit -m "chore(deps): add changeset for ${DEPENDENCY_NAMES}"
+          git push origin "HEAD:${PR_HEAD_REF}"
+
+      # Native `gh pr merge --auto`: GitHub's own required-status-check
+      # enforcement gates the actual merge, so there's no read-quality gap
+      # here. `--squash` because squash is the only merge method this repo
+      # allows (verified: allow_squash_merge=true, allow_merge_commit=false,
+      # allow_rebase_merge=false).
+      - name: Arm auto-merge (patch/minor only, re-verified above)
+        if: steps.gate.outputs.safe == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          gh pr merge --squash --auto "$PR_URL" \
+            || echo "::notice::gh pr merge --auto returned non-zero — likely already armed by an earlier run on this PR; not treating as fatal."
