@@ -81,6 +81,26 @@ updates:
       # same major-bump treatment as the others in this list.
       - dependency-name: "@radix-ui/*"
         update-types: ["version-update:semver-major"]
+      # Every other production ("dependencies", not "devDependencies") package
+      # gets the same treatment — a major bump here changes what every
+      # consumer of this published package must satisfy, so it needs a
+      # deliberate migration pass, not an automated PR. (The auto-merge
+      # workflow's own runtime gate blocks major bumps regardless of this
+      # list, but leaving these off meant Dependabot would still open —
+      # and pile up — major-bump PRs for them with no automation to close
+      # or triage the pile.)
+      - dependency-name: "class-variance-authority"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "clsx"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "cmdk"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-day-picker"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "tailwind-merge"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "tailwindcss-animate"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
