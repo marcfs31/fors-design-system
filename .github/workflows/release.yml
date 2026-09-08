@@ -18,6 +18,7 @@ permissions:
   contents: write
   pull-requests: write
   packages: write
+  actions: write # dispatch CI + CodeQL on the version PR (see below)
 
 jobs:
   release:
@@ -47,6 +48,7 @@ jobs:
       # PAT/secret; see NODE_AUTH_TOKEN below) — and tags + creates a
       # GitHub Release for what it published.
       - uses: changesets/action@v1
+        id: changesets
         with:
           version: npm run version-packages
           publish: npm run release
@@ -55,3 +57,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # The version PR is pushed with GITHUB_TOKEN, and GitHub does not start
+      # push/pull_request workflows for such commits — so none of the status
+      # checks `main` requires would ever appear and the PR could never merge.
+      # workflow_dispatch is the documented exception: dispatch CI and CodeQL
+      # on the version branch so its checks run against the bumped state.
+      - name: Run required checks on the version PR
+        if: steps.changesets.outputs.hasChangesets == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run ci.yml --ref changeset-release/main
+          gh workflow run codeql.yml --ref changeset-release/main
