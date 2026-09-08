@@ -15,9 +15,11 @@ on:
         description: "Space-separated release tags to republish (e.g. 'v1.3.0 v1.4.0 v1.4.1')"
         required: true
       dist_tag:
-        description: "npm dist-tag for these versions (never 'latest' for old versions)"
+        # npm rejects any tag that parses as a SemVer range ("v1", "1.x"), so
+        # the default is a plain word.
+        description: "npm dist-tag for these versions — a plain word, never 'latest' for old versions"
         required: true
-        default: "v1"
+        default: "legacy"
 
 permissions:
   contents: read
