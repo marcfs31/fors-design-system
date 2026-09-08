@@ -5,7 +5,7 @@ import { Button } from "./Button";
 import { Input } from "./Input";
 
 const meta: Meta = {
-  title: "Fors/Popover",
+  title: "Fors/Overlays/Popover",
   parameters: { layout: "fullscreen" },
 };
 export default meta;

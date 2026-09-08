@@ -11,7 +11,7 @@ import {
 import { Button } from "./Button";
 
 const meta: Meta = {
-  title: "Fors/DropdownMenu",
+  title: "Fors/Overlays/DropdownMenu",
   parameters: { layout: "fullscreen" },
 };
 export default meta;

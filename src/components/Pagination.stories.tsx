@@ -3,7 +3,7 @@ import { Pagination, PaginationItem, PaginationEllipsis } from "./Pagination";
 import { Button } from "./Button";
 
 const meta: Meta = {
-  title: "Fors/Pagination",
+  title: "Fors/Navigation/Pagination",
 };
 export default meta;
 type Story = StoryObj;

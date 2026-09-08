@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./Select";
 
 const meta: Meta = {
-  title: "Fors/Select",
+  title: "Fors/Forms/Select",
 };
 export default meta;
 type Story = StoryObj;

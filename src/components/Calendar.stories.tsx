@@ -4,7 +4,7 @@ import { expect, screen, userEvent, waitForElementToBeRemoved, within } from "@s
 import { Calendar, DatePicker } from "./Calendar";
 
 const meta: Meta = {
-  title: "Fors/Calendar",
+  title: "Fors/Forms/Calendar",
   parameters: { layout: "fullscreen" },
 };
 export default meta;

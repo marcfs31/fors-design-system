@@ -15,7 +15,7 @@ import {
 import { Text } from "./Text";
 
 const meta: Meta = {
-  title: "Fors/Sidebar",
+  title: "Fors/Navigation/Sidebar",
   parameters: {
     layout: "fullscreen",
     a11y: { options: { rules: { region: { enabled: true } } } },

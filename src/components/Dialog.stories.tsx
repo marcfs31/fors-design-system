@@ -13,7 +13,7 @@ import {
 import { Button } from "./Button";
 
 const meta: Meta = {
-  title: "Fors/Dialog",
+  title: "Fors/Overlays/Dialog",
   parameters: { layout: "fullscreen" },
 };
 export default meta;

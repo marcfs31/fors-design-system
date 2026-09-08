@@ -3,7 +3,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from ".
 import { Badge } from "./Badge";
 
 const meta: Meta = {
-  title: "Fors/Table",
+  title: "Fors/Data Display/Table",
 };
 export default meta;
 type Story = StoryObj;

@@ -9,7 +9,7 @@ import {
 } from "./Toast";
 
 const meta: Meta = {
-  title: "Fors/Toast",
+  title: "Fors/Overlays/Toast",
   parameters: { layout: "fullscreen" },
 };
 export default meta;
