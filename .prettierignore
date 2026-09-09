@@ -6,3 +6,10 @@ package-lock.json
 CHANGELOG.md
 fixtures/**/.next
 fixtures/**/next-env.d.ts
+
+# Generated/vendored by `graft init` (regenerated on upgrade) — not
+# hand-formatted source, same reasoning as eslint.config.js's ignores.
+.claude/helpers
+.claude/settings.json
+.claude/skills/graft/SKILL.md
+.mcp.json
