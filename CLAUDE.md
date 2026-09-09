@@ -67,7 +67,19 @@ attempt on a later pass.
 ## Usage-limit / interruption note
 
 Hitting an actual account usage/rate limit is an external stop I can't will
-past — but it's not a reason to abandon the mandate. Whatever picks this back
-up (a new interactive session, or the `dependabot-codeql-triage` scheduled
-task once its scoped credential is set up) should read this file and resume
-without re-litigating the plan.
+past — a live conversation turn cannot resurrect itself mid-cutoff. What
+actually provides "wait and continue automatically" is the
+`dependabot-codeql-triage` scheduled task (created 2026-09-09, every 3 hours,
+`~/.claude/scheduled-tasks/dependabot-codeql-triage/SKILL.md`) — it fires
+independently of any one session, reads this file, and does one triage pass;
+if a given firing hits a usage limit or otherwise fails, the next scheduled
+firing simply tries again. That's the real mechanism, not a promise from any
+one session.
+
+Two things still open on that task, both needing Marc directly:
+- It currently runs under the ambient `gh` CLI session's personal
+  credentials, not a repo-scoped one — see "Repo policies" / the automation
+  design critique earlier in this mandate's history for why a dedicated
+  fine-grained PAT (scoped to just this repo) is the safer long-term setup.
+- Its first run may pause on tool-approval prompts; running it once manually
+  ("Run now") pre-approves what it needs so later scheduled firings don't stall.
