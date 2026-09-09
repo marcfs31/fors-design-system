@@ -48,6 +48,8 @@ updates:
         patterns:
           - "vitest"
           - "@vitest/coverage-v8"
+          - "@vitest/browser"
+          - "@vitest/browser-playwright"
           - "vitest-axe"
 
       vite:
