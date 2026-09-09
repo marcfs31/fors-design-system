@@ -77,6 +77,7 @@ firing simply tries again. That's the real mechanism, not a promise from any
 one session.
 
 Two things still open on that task, both needing Marc directly:
+
 - It currently runs under the ambient `gh` CLI session's personal
   credentials, not a repo-scoped one — see "Repo policies" / the automation
   design critique earlier in this mandate's history for why a dedicated
