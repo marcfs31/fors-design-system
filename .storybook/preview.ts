@@ -128,8 +128,10 @@ const preview: Preview = {
     // visual state, not a mid-transition frame. Dynamically imported with a
     // fallback, matching @storybook/addon-vitest's own test-utils.ts — this
     // file is also bundled for normal Storybook browsing, where
-    // `@vitest/browser/context` isn't a live connection.
-    const { commands } = await import("@vitest/browser/context").catch(() => ({
+    // `vitest/browser` isn't a live connection. (`@vitest/browser/context` is
+    // Vitest 4's deprecated alias for this — moved to the new path ahead of
+    // the next major removing it.)
+    const { commands } = await import("vitest/browser").catch(() => ({
       commands: null,
     }));
     await commands?.forceReducedMotion?.();

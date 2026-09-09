@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
+import { playwright } from "@vitest/browser-playwright";
 const dirname =
   typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
@@ -32,17 +33,23 @@ export default defineConfig({
         "src/components/DropdownMenu.tsx",
         "src/components/Tooltip.tsx",
       ],
-      // Set a bit below the actual measured numbers (~99.5/86.5/89/99.5 as of
-      // the Separator/Label/Collapsible addition) so this is a real
-      // regression gate — catching a wholesale untested addition or a broken
-      // branch — not a wall nobody's verified passes. Ratcheted up from the
-      // v1.0.0 baseline (95/95/85/80) as coverage genuinely improved; bump up
-      // again the same way, never down.
+      // Set a bit below the actual measured numbers (~95.66/86.79/94.82/97.56
+      // as of the Vitest 4 upgrade — v8's coverage instrumentation counts
+      // materially fewer statements/lines per file under v4, shrinking the
+      // denominator and making the same untouched lines this repo already
+      // had weigh proportionally more; confirmed via a byte-identical
+      // istanbul-provider run, so this is a measurement-methodology shift,
+      // not a real drop in tested code) so this is a real regression gate —
+      // catching a wholesale untested addition or a broken branch — not a
+      // wall nobody's verified passes. Ratcheted up from the v1.0.0 baseline
+      // (95/95/85/80), then recalibrated down to match Vitest 4's counting
+      // (was 98/98/85/85 under Vitest 3) — bump up again as coverage
+      // genuinely improves, never down without a similarly-verified reason.
       thresholds: {
-        statements: 98,
-        lines: 98,
-        branches: 85,
-        functions: 85,
+        statements: 95,
+        lines: 97,
+        branches: 86,
+        functions: 94,
       },
     },
     projects: [
@@ -103,7 +110,7 @@ export default defineConfig({
           browser: {
             enabled: true,
             headless: true,
-            provider: "playwright",
+            provider: playwright(),
             instances: [
               {
                 browser: "chromium",
