@@ -47,7 +47,7 @@ jobs:
       # workflow's own GITHUB_TOKEN (same-repo publish needs no separate
       # PAT/secret; see NODE_AUTH_TOKEN below) — and tags + creates a
       # GitHub Release for what it published.
-      - uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1
+      - uses: changesets/action@8488615a623b1b9c987934bb89eae8af6a946ac1 # v1
         id: changesets
         with:
           version: npm run version-packages
