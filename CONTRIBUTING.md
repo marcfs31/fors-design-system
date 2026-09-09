@@ -27,18 +27,23 @@ npm run size              # bundle-size budget — see the "size-limit" field in
 
 All of these run in CI; failing any of them blocks merge.
 
-**Dependency bumps**: verify against the Node version in `.nvmrc` (20), not
-whatever's globally installed — CI's matrix (20 & 22) exists because dev
-tooling occasionally uses a newer Node API than 20 ships (e.g. `size-limit@13`
-used `fs.promises.glob`, added in Node 22.13, and broke the Node 20 CI job
-even though it worked locally on a newer Node). `nvm use` before testing a
-bump.
+**Dependency bumps**: verify against the Node version in `.nvmrc` (22), not
+whatever's globally installed — CI's matrix (22 & 24) exists because dev
+tooling occasionally uses a newer Node API than the floor ships. `nvm use`
+before testing a bump.
+
+The floor was Node 20 until 2026-09-09, when three Dependabot majors landed
+the same week that all required Node 22+ (`size-limit@13` needs
+`fs.promises.glob`, added in 22.13; `jsdom@30` and `@changesets/cli@3` raised
+their own minimums past 20 entirely) — pinning dev tooling below Node 22 had
+stopped being sustainable, so the floor moved instead of pinning every
+affected package below its Node-20-dropping major indefinitely.
 
 ## Testing policy
 
 Every change lands with the test that would have caught it breaking. The layers, what each one catches, and the per-change checklist live in the `testing` skill (`.claude/skills/testing/SKILL.md`); the policy is:
 
-- **Coverage is a floor, not a target.** `npm run test:coverage` enforces 98% statements/lines, 85% branches/functions (`vitest.config.ts`). New source files under `src/` are covered by a test that asserts something real about them — never by an `exclude` entry. The thresholds only ever go up.
+- **Coverage is a floor, not a target.** `npm run test:coverage` enforces 95%/97% statements/lines, 86%/94% branches/functions (`vitest.config.ts`). New source files under `src/` are covered by a test that asserts something real about them — never by an `exclude` entry. Ratchet the thresholds up as coverage genuinely improves; only lower them with an equally-verified reason (e.g. an upstream tooling change in how coverage itself is measured, not a drop in tested code — see `vitest.config.ts`'s threshold comment for the Vitest 4 recalibration).
 - **Every public surface has a proof at its own layer.** Component behavior and accessibility → co-located `*.test.tsx` (`vitest-axe`). Rendered DOM → `src/__tests__/dom-snapshot.test.tsx`. Color pairings → `src/tokens/__tests__/contrast.test.ts`. Real-browser render + axe + `play` flows → Storybook Vitest addon. The built artifact → `npm run smoke`. Package resolution → `npm run test:package`. A real consumer app → `npm run test:consumer`. Bundle size → `npm run size`.
 - **Green everywhere before merge.** All of the above run in CI and are required status checks on `main` — a PR cannot merge with a red or stale check, and admins are not exempt.
 
