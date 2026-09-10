@@ -2,8 +2,8 @@
   "name": "@marcfs31/fors-design-system",
   "version": "2.0.0",
   "private": false,
-  "description": "Fors Corporation design system — brand tokens and React components.",
-  "author": "Fors Corporation <developer@marcfors.com>",
+  "description": "Marc Fors design system — brand tokens and React components.",
+  "author": "Marc Fors <developer@marcfors.com>",
   "license": "UNLICENSED",
   "type": "module",
   "engines": {

@@ -3,7 +3,7 @@
 [![CI](https://github.com/marcfs31/fors-design-system/actions/workflows/ci.yml/badge.svg)](https://github.com/marcfs31/fors-design-system/actions/workflows/ci.yml)
 [![Storybook](https://img.shields.io/badge/Storybook-live-16C7B0)](https://marcfs31.github.io/fors-design-system/)
 
-The design system behind Fors Corporation's software: brand tokens and a React component library shared across every custom client app and in-house product Fors builds, so nothing starts from a blank Tailwind config again.
+The design system behind Marc Fors's software: brand tokens and a React component library shared across every custom client app and in-house product Fors builds, so nothing starts from a blank Tailwind config again.
 
 **[Browse the component library →](https://marcfs31.github.io/fors-design-system/)** (Storybook, deployed from `main`)
 
@@ -196,3 +196,7 @@ Typography: `Heading`, `Text`, `Label`. Forms: `Button` (with a built-in `loadin
 Overlay/select components are built on [Radix UI](https://www.radix-ui.com/) primitives for correct focus management and keyboard behavior; every component ships fully unstyled from Radix and is styled entirely through this repo's Tailwind token vocabulary. Open/close motion for every overlay comes from `tailwindcss-animate`, driven by Radix's own `data-state`/`data-side` attributes, and automatically collapses under `prefers-reduced-motion`.
 
 Every component has a Storybook story (with autodocs generating a props-table page from its TypeScript types) and a co-located test covering behavior and accessibility (`vitest-axe`).
+
+## License
+
+Proprietary — All Rights Reserved. The source is published publicly for reference and transparency, but no license to use, copy, modify, or distribute it is granted except by separate written agreement with the copyright holder. See [LICENSE](LICENSE).
