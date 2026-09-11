@@ -1,5 +1,14 @@
 # @marcfs31/fors-design-system
 
+## 2.2.0
+
+### Minor Changes
+
+- 68217f3: `Alert` accepts `onDismiss` and `dismissLabel`, rendering a close button for banners the user can clear. The alert stays controlled — it never hides itself, so the consumer owns the visibility state. The close button meets the 24px touch-target minimum, takes focus from the keyboard, and inherits the variant's colour; the glyph is inline SVG, so the component bundle still carries no dependency on the icons entry. Alerts without `onDismiss` render exactly the markup they did before.
+- 68217f3: Add `IconUpload` and `IconX` to the icons entry. `IconUpload` is the counterpart to the existing `IconDownload`, for import and file-picker buttons; `IconX` is the dismiss glyph for banners, chips and filter pills. Both follow the existing conventions: 20px / 1.75 stroke, `currentColor`, decorative by default, individually tree-shakeable.
+- 68217f3: Ship the design tokens on their own, as `@marcfs31/fors-design-system/tokens.css`. Consumers who compile their own CSS — a Tailwind v4 app using the `@theme` entry, or an app that only wants the palette — can now take the custom properties without also pulling in the compiled component layer from `styles.css`.
+- 68217f3: Add the `useForsTokens` hook, which resolves `--fors-*` design tokens to their computed values and re-reads them when the theme changes. It exists for charting libraries: SVG presentation attributes (`stroke`, `fill`, `stopColor`) reject `var()`, so Recharts and friends need the resolved string. Built on `useSyncExternalStore`, so it renders on the server (tokens read as empty strings) and hydrates without a mismatch, and it keeps snapshot identity stable so an unrelated `<html>` attribute change does not re-render every chart.
+
 ## 2.1.0
 
 ### Minor Changes
