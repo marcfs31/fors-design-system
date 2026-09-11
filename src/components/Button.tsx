@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
 import { Spinner } from "./Spinner";
@@ -34,6 +35,12 @@ export interface ButtonProps
   leadingIcon?: React.ReactNode;
   /** Shows a spinner in place of `leadingIcon` and disables the button — for an in-flight async action. */
   loading?: boolean;
+  /**
+   * Render the styles onto the single child element instead of a `<button>` —
+   * e.g. a router `<Link>` that should look like a button. `leadingIcon` and
+   * `loading` are ignored in this mode (put the icon inside the child).
+   */
+  asChild?: boolean;
 }
 
 /**
@@ -43,14 +50,35 @@ export interface ButtonProps
  * toolbar actions, and `danger` for destructive confirmations. Set `loading`
  * for an in-flight async action instead of manually swapping in a Spinner —
  * it also disables the button so it can't be double-submitted.
+ *
+ * Renders `data-fors="button"` so an app-level skin (e.g. an extra theme
+ * defined in the consumer's CSS) can target Fors buttons specifically —
+ * `[data-theme="x"] [data-fors="button"]` — without also catching the
+ * `<button>`s Radix renders inside `Select`, `Dialog`, `Calendar`, etc.
  */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, leadingIcon, loading, disabled, children, ...props }, ref) => {
+  (
+    { className, variant, size, leadingIcon, loading, disabled, asChild, children, ...props },
+    ref
+  ) => {
+    if (asChild) {
+      return (
+        <Slot
+          ref={ref}
+          data-fors="button"
+          className={cn(buttonVariants({ variant, size }), className)}
+          {...props}
+        >
+          {children}
+        </Slot>
+      );
+    }
     return (
       <button
         ref={ref}
         disabled={disabled || loading}
         aria-busy={loading || undefined}
+        data-fors="button"
         className={cn(buttonVariants({ variant, size }), className)}
         {...props}
       >

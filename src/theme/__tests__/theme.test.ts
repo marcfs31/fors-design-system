@@ -18,6 +18,14 @@ describe("applyForsTheme", () => {
     expect(el.getAttribute("data-theme")).toBe("dark");
     expect(document.documentElement.hasAttribute("data-theme")).toBe(false);
   });
+
+  it("accepts an app-defined theme name beyond the built-ins", () => {
+    // Apps may define extra themes by overriding --fors-* under their own
+    // [data-theme="…"] block; the helper must not reject those at the type
+    // or runtime level.
+    applyForsTheme("synthwave");
+    expect(document.documentElement.getAttribute("data-theme")).toBe("synthwave");
+  });
 });
 
 describe("forsAntiFlashScript", () => {

@@ -61,7 +61,16 @@ const preview: Preview = {
       storySort: {
         order: [
           "Fors",
-          ["Overview", "Typography", "Forms", "Overlays", "Feedback", "Data Display", "Navigation"],
+          [
+            "Overview",
+            "Foundations",
+            "Typography",
+            "Forms",
+            "Overlays",
+            "Feedback",
+            "Data Display",
+            "Navigation",
+          ],
         ],
       },
     },

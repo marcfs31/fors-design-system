@@ -8,9 +8,16 @@
 export const FORS_THEMES = ["dark", "light"] as const;
 export type ForsTheme = (typeof FORS_THEMES)[number];
 
+/**
+ * A built-in Fors theme, or any theme name an app defines itself by
+ * overriding the `--fors-*` tokens under its own `[data-theme="…"]` block.
+ * The `string & {}` keeps editor completion for the built-ins.
+ */
+export type ForsThemeName = ForsTheme | (string & {});
+
 /** Sets the `data-theme` attribute that every Fors token resolves against. */
 export function applyForsTheme(
-  theme: ForsTheme,
+  theme: ForsThemeName,
   target: HTMLElement = document.documentElement
 ): void {
   target.setAttribute("data-theme", theme);
