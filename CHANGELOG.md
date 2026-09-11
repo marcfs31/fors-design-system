@@ -1,5 +1,17 @@
 # @marcfs31/fors-design-system
 
+## 2.1.0
+
+### Minor Changes
+
+- fbdc1b6: `Button` accepts `asChild` (Radix Slot) to render its styles onto a single child element — the way to make a router `<Link>` look like a button without losing link semantics.
+- fbdc1b6: `Button` renders `data-fors="button"` so consumer stylesheets (e.g. an app-defined extra theme) can target Fors buttons with `[data-fors="button"]` without also matching the `<button>`s Radix renders inside `Select`, `Dialog`, `Calendar` and other primitives.
+- fbdc1b6: New `ConfirmDialog`: a controlled yes/no confirmation on top of `Dialog`, exposed as `role="alertdialog"`, with `destructive` (danger confirm, initial focus on Cancel) and `loading` states — the replacement for `window.confirm` in every Fors app.
+- fbdc1b6: `DatePicker` accepts `locale` (a date-fns locale, forwarded to the `Calendar` grid and used for the trigger's date text) and `formatValue` (custom trigger text), so an app with a runtime language switch can show e.g. Spanish month names instead of the browser's default locale.
+- fbdc1b6: Add an icons entry, `@marcfs31/fors-design-system/icons`: a curated, Fors-named subset of Lucide (`IconPlus`, `IconTrash`, `IconReceipt`, `IconStore`, …) rendered at 20px / 1.75 stroke, `currentColor`, decorative by default (`aria-hidden`), tree-shakeable per icon. `lucide-react` is a regular dependency and installs with the package; its ISC/MIT notices ship in `THIRD_PARTY_NOTICES.md`.
+- fbdc1b6: New `TablePagination`: the footer of a paginated data table — rows-per-page `Select`, a live "from–to of count" summary, and a windowed page strip (`pageRange`, also exported) with previous/next. Pages are 1-based; all copy is overridable through `labels` for localized apps.
+- fbdc1b6: `applyForsTheme` accepts any theme name (new `ForsThemeName = ForsTheme | (string & {})` type), so an app that defines extra themes by overriding the `--fors-*` tokens under its own `[data-theme="…"]` blocks can use the same helper instead of setting the attribute by hand. `forsAntiFlashScript({ themes })` already accepted arbitrary names.
+
 ## 2.0.0
 
 ### Major Changes
