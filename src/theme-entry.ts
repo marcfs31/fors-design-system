@@ -8,6 +8,7 @@ export {
   applyForsTheme,
   forsAntiFlashScript,
   type ForsTheme,
+  type ForsThemeName,
   type ForsAntiFlashOptions,
 } from "./theme";
 export { FORS_PALETTES, DARK_PALETTE, LIGHT_PALETTE, type ForsPalette } from "./tokens/palettes";
