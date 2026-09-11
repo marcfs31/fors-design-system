@@ -1,7 +1,8 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, screen, userEvent, waitFor, within } from "storybook/test";
-import { Calendar, DatePicker } from "./Calendar";
+import { es } from "date-fns/locale";
+import { Calendar, DatePicker, type DatePickerProps } from "./Calendar";
 
 const meta: Meta = {
   title: "Fors/Forms/Calendar",
@@ -70,14 +71,20 @@ export const KeyboardNavigation: Story = {
   },
 };
 
-function DatePickerExample() {
+function DatePickerExample({ locale }: { locale?: DatePickerProps["locale"] }) {
   const [value, setValue] = React.useState<Date | undefined>(new Date(2026, 8, 8));
   return (
     <div className="flex max-w-xs flex-col gap-2 pt-12">
-      <DatePicker value={value} onValueChange={setValue} />
+      <DatePicker value={value} onValueChange={setValue} locale={locale} />
     </div>
   );
 }
+
+/** `locale` localizes both the grid (weekday/month names, week start) and the trigger text. */
+export const DatePickerLocalized: Story = {
+  name: "DatePicker (es locale)",
+  render: () => <DatePickerExample locale={es} />,
+};
 
 /**
  * Real-browser interaction: opens the popover, moves through the grid with

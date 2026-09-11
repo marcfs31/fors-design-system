@@ -109,6 +109,14 @@ export interface DatePickerProps {
   className?: string;
   /** Forwarded to the trigger button, e.g. to pair it with a `<label htmlFor>`. */
   id?: string;
+  /**
+   * date-fns locale for the calendar grid (weekday/month names, first day of
+   * week) and, unless `formatValue` is given, for the trigger's date text.
+   * Defaults to react-day-picker's `enUS` and the runtime locale respectively.
+   */
+  locale?: DayPickerProps["locale"];
+  /** Custom trigger text for a selected date — overrides the `Intl.DateTimeFormat` default. */
+  formatValue?: (date: Date) => string;
 }
 
 const CALENDAR_ICON = (
@@ -143,10 +151,14 @@ export function DatePicker({
   disabled,
   className,
   id,
+  locale,
+  formatValue,
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
   const label = value
-    ? new Intl.DateTimeFormat(undefined, { dateStyle: "long" }).format(value)
+    ? formatValue
+      ? formatValue(value)
+      : new Intl.DateTimeFormat(locale?.code, { dateStyle: "long" }).format(value)
     : placeholder;
 
   return (
@@ -176,6 +188,7 @@ export function DatePicker({
             setOpen(false);
           }}
           disabled={disabled}
+          locale={locale}
           autoFocus
         />
       </PopoverContent>

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "../test-utils/axe";
+import { es } from "date-fns/locale";
 import { Calendar, DatePicker } from "./Calendar";
 
 // Calendar itself isn't a floating-ui popper (it's plain in-flow markup), so
@@ -88,5 +89,32 @@ describe("DatePicker", () => {
     render(<DatePicker />);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.queryByRole("grid")).not.toBeInTheDocument();
+  });
+
+  it("formats the selected date in the given locale", () => {
+    render(<DatePicker value={new Date(2026, 8, 8)} locale={es} />);
+    expect(
+      screen.getByRole("button", { name: /Selected date: 8 de septiembre de 2026\. Change date\./ })
+    ).toBeInTheDocument();
+  });
+
+  it("lets formatValue override the trigger text entirely", () => {
+    render(
+      <DatePicker
+        value={new Date(2026, 8, 8)}
+        formatValue={(d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`}
+      />
+    );
+    expect(
+      screen.getByRole("button", { name: "Selected date: 2026-09. Change date." })
+    ).toBeInTheDocument();
+  });
+});
+
+describe("Calendar locale", () => {
+  it("renders month and weekday names in the given locale", () => {
+    render(<Calendar mode="single" defaultMonth={new Date(2026, 8, 1)} locale={es} />);
+    expect(screen.getByRole("grid", { name: /septiembre 2026/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /martes, 8 de septiembre/i })).toBeInTheDocument();
   });
 });
