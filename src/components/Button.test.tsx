@@ -33,6 +33,11 @@ describe("Button", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("carries the data-fors slot attribute for consumer skins", () => {
+    render(<Button>Deploy</Button>);
+    expect(screen.getByRole("button", { name: "Deploy" })).toHaveAttribute("data-fors", "button");
+  });
+
   it("disables itself and marks aria-busy while loading", async () => {
     const onClick = vi.fn();
     render(

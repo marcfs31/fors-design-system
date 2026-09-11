@@ -43,6 +43,11 @@ export interface ButtonProps
  * toolbar actions, and `danger` for destructive confirmations. Set `loading`
  * for an in-flight async action instead of manually swapping in a Spinner —
  * it also disables the button so it can't be double-submitted.
+ *
+ * Renders `data-fors="button"` so an app-level skin (e.g. an extra theme
+ * defined in the consumer's CSS) can target Fors buttons specifically —
+ * `[data-theme="x"] [data-fors="button"]` — without also catching the
+ * `<button>`s Radix renders inside `Select`, `Dialog`, `Calendar`, etc.
  */
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, leadingIcon, loading, disabled, children, ...props }, ref) => {
@@ -51,6 +56,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         aria-busy={loading || undefined}
+        data-fors="button"
         className={cn(buttonVariants({ variant, size }), className)}
         {...props}
       >
