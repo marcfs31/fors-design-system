@@ -23,6 +23,7 @@ const distThemeCjs = path.join(root, "dist/theme.cjs");
 const distStyles = path.join(root, "dist/styles.css");
 const distFonts = path.join(root, "dist/fonts.css");
 const distTailwindCss = path.join(root, "dist/tailwind.css");
+const distTokensCss = path.join(root, "dist/tokens.css");
 const distPreset = path.join(root, "dist/tailwind-preset.js");
 const distIcons = path.join(root, "dist/icons.js");
 
@@ -50,6 +51,7 @@ check("dist/theme.d.ts exists", () => existsSync(path.join(root, "dist/theme.d.t
 check("dist/styles.css exists", () => existsSync(distStyles));
 check("dist/fonts.css exists", () => existsSync(distFonts));
 check("dist/tailwind.css exists (Tailwind v4 @theme entry)", () => existsSync(distTailwindCss));
+check("dist/tokens.css exists (tokens-only entry)", () => existsSync(distTokensCss));
 check("dist/tailwind-preset.js exists (Tailwind v3 preset entry)", () => existsSync(distPreset));
 check("dist/tailwind-preset.cjs exists", () =>
   existsSync(path.join(root, "dist/tailwind-preset.cjs"))
@@ -147,6 +149,7 @@ const EXPECTED_COMPONENT_EXPORTS = [
   "SidebarTrigger",
   "AppShell",
   "AppShellMain",
+  "useForsTokens",
 ];
 
 for (const name of EXPECTED_COMPONENT_EXPORTS) {
@@ -159,6 +162,7 @@ const EXPECTED_ICON_EXPORTS = [
   "IconEdit",
   "IconSave",
   "IconDownload",
+  "IconUpload",
   "IconTrash",
   "IconTrashForever",
   "IconTrashSweep",
@@ -181,6 +185,7 @@ const EXPECTED_ICON_EXPORTS = [
   "IconTag",
   "IconUsers",
   "IconUserCheck",
+  "IconX",
 ];
 for (const name of EXPECTED_ICON_EXPORTS) {
   check(`icons entry exports "${name}"`, () => icons[name] !== undefined);
@@ -213,6 +218,30 @@ check(
 check("styles.css contains compiled component styles", () => css.includes("--fors-accent"));
 check("styles.css makes no network calls (no webfont @import)", () => !css.includes("@import"));
 check("styles.css is non-trivial in size", () => statSync(distStyles).size > 1000);
+
+// The tokens-only entry exists so a consumer who compiles their own CSS (a
+// Tailwind v4 app, or one that only wants the palette) can take the custom
+// properties without the compiled component layer.
+const tokensCss = readFileSync(distTokensCss, "utf8");
+check(
+  "tokens.css defines the custom properties in :root",
+  () => /:root\s*\{/.test(tokensCss) && tokensCss.includes("--fors-accent")
+);
+check("tokens.css carries the light theme overrides", () =>
+  tokensCss.includes('[data-theme="light"]')
+);
+check(
+  "tokens.css ships no component styles or Tailwind directives",
+  () => !tokensCss.includes("@tailwind") && !/\.fors-|\.btn-/.test(tokensCss)
+);
+check(
+  "tokens.css makes no network calls (no webfont @import)",
+  () => !tokensCss.includes("@import")
+);
+check("styles.css already contains every token in tokens.css", () => {
+  const names = [...tokensCss.matchAll(/--fors-[a-z0-9-]+/g)].map((m) => m[0]);
+  return names.length > 20 && names.every((name) => css.includes(name));
+});
 
 const fontsCss = readFileSync(distFonts, "utf8");
 check("fonts.css loads the brand faces from Google Fonts", () =>

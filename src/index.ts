@@ -140,4 +140,6 @@ export {
   type SidebarNavItemProps,
 } from "./components/Sidebar";
 
+export { useForsTokens, type ForsTokenName } from "./hooks/useForsTokens";
+
 export { cn } from "./lib/cn";
