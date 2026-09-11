@@ -1,0 +1,5 @@
+{
+  "main": "../dist/icons.cjs",
+  "module": "../dist/icons.js",
+  "types": "../dist/icons.d.ts"
+}

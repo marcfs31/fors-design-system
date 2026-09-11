@@ -46,6 +46,16 @@
         "default": "./dist/tailwind-preset.cjs"
       }
     },
+    "./icons": {
+      "import": {
+        "types": "./dist/icons.d.ts",
+        "default": "./dist/icons.js"
+      },
+      "require": {
+        "types": "./dist/icons.d.cts",
+        "default": "./dist/icons.cjs"
+      }
+    },
     "./styles.css": "./dist/styles.css",
     "./tailwind.css": "./dist/tailwind.css",
     "./fonts.css": "./dist/fonts.css",
@@ -54,7 +64,9 @@
   "files": [
     "dist",
     "theme",
-    "tailwind-preset"
+    "tailwind-preset",
+    "icons",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "repository": {
     "type": "git",
@@ -101,6 +113,11 @@
       "name": "Compiled CSS (brotli)",
       "path": "dist/styles.css",
       "limit": "10 KB"
+    },
+    {
+      "name": "Icons entry (import * from icons.js, bundled Lucide subset, brotli)",
+      "path": "dist/icons.js",
+      "limit": "8 KB"
     }
   ],
   "peerDependencies": {
@@ -127,6 +144,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "lucide-react": "^1.45.0",
     "react-day-picker": "^10.0.1",
     "tailwind-merge": "^3.6.0",
     "tailwindcss-animate": "^1.0.7"

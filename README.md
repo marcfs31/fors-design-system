@@ -57,8 +57,9 @@ Package entries:
 | `@marcfs31/fors-design-system/tailwind.css`    | Optional, Tailwind **v4** apps: `@theme` mapping so your own markup can use the token utilities (`bg-accent`, `text-fg-muted`, `rounded-md`, …). See [Tailwind](#tailwind).                                       |
 | `@marcfs31/fors-design-system/tailwind-preset` | Optional, Tailwind **v3** apps: the same mapping as a preset for `tailwind.config`. See [Tailwind](#tailwind).                                                                                                    |
 | `@marcfs31/fors-design-system/fonts.css`       | Optional: loads the brand faces from Google Fonts. See [Fonts](#fonts).                                                                                                                                           |
+| `@marcfs31/fors-design-system/icons`           | The icon set: a curated, Fors-named subset of Lucide (`IconPlus`, `IconTrash`, `IconReceipt`, …). Server-safe, tree-shakeable per icon. See [Icons](#icons).                                                      |
 
-Runtime dependencies (Radix primitives, `cmdk`, `react-day-picker`, `class-variance-authority`, `tailwind-merge`) are regular `dependencies` of the package and install with it; only `react` / `react-dom` (18 or 19) are peers you provide. Tailwind is **not** required to use the components — `styles.css` is precompiled.
+Runtime dependencies (Radix primitives, `cmdk`, `react-day-picker`, `lucide-react`, `class-variance-authority`, `tailwind-merge`) are regular `dependencies` of the package and install with it; only `react` / `react-dom` (18 or 19) are peers you provide. Tailwind is **not** required to use the components — `styles.css` is precompiled.
 
 ### Tailwind
 
@@ -93,6 +94,21 @@ Either way you then get `bg-ink-surface`, `text-fg-secondary`, `border-ink-borde
 - **Self-hosted**: set `--fors-font-sans` / `--fors-font-heading` on `:root` to your own stack — every component reads the font through those two CSS variables.
 
 Without any of the above, text falls back to `system-ui` — never invisible, just not on-brand.
+
+### Icons
+
+```tsx
+import { Button } from "@marcfs31/fors-design-system";
+import { IconPlus, IconTrash, IconUserCheck } from "@marcfs31/fors-design-system/icons";
+
+<Button leadingIcon={<IconPlus />}>New product</Button>
+<Button variant="ghost" size="sm" aria-label="Delete"><IconTrash size={16} /></Button>
+
+// A meaningful icon (conveys information on its own) needs a name:
+<IconUserCheck aria-hidden={false} role="img" aria-label="Checked in" />
+```
+
+Icons are named by what they mean in a Fors app, not by glyph, so consumers never depend on which upstream drawing backs "delete" or "sales". Defaults: 20px, 1.75 stroke, `currentColor` (so `className="text-danger"` recolors it), and `aria-hidden="true"` — the right default for an icon next to a label or inside a button that already has an accessible name. Every icon is a separate `/*#__PURE__*/` export, so only the ones you import reach your bundle. The set is deliberately small; add to it in this repo (one line in `src/icons/index.tsx`) rather than importing `lucide-react` directly in an app, so every Fors app shares the same vocabulary. Lucide is ISC-licensed; see `THIRD_PARTY_NOTICES.md`.
 
 ## Theming
 

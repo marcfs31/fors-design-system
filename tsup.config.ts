@@ -9,6 +9,9 @@ export default defineConfig({
     index: "src/index.ts",
     theme: "src/theme-entry.ts",
     "tailwind-preset": "src/tailwind-preset.ts",
+    // Pure SVG components, no hooks — server-safe, so no directive. Lucide
+    // stays external like the Radix packages (a declared dependency).
+    icons: "src/icons/index.tsx",
   },
   // ESM is the primary target; the CJS build is a compatibility shim so
   // `require()` from CommonJS tooling still resolves (validated by

@@ -24,6 +24,7 @@ const distStyles = path.join(root, "dist/styles.css");
 const distFonts = path.join(root, "dist/fonts.css");
 const distTailwindCss = path.join(root, "dist/tailwind.css");
 const distPreset = path.join(root, "dist/tailwind-preset.js");
+const distIcons = path.join(root, "dist/icons.js");
 
 let failures = 0;
 function check(label, fn) {
@@ -56,6 +57,9 @@ check("dist/tailwind-preset.cjs exists", () =>
 check("dist/tailwind-preset.d.ts exists", () =>
   existsSync(path.join(root, "dist/tailwind-preset.d.ts"))
 );
+check("dist/icons.js exists (icons entry)", () => existsSync(distIcons));
+check("dist/icons.cjs exists", () => existsSync(path.join(root, "dist/icons.cjs")));
+check("dist/icons.d.ts exists", () => existsSync(path.join(root, "dist/icons.d.ts")));
 
 const mod = await import(path.resolve(distIndex));
 const cjs = require(path.resolve(distCjs));
@@ -145,6 +149,53 @@ const EXPECTED_COMPONENT_EXPORTS = [
 for (const name of EXPECTED_COMPONENT_EXPORTS) {
   check(`exports "${name}"`, () => mod[name] !== undefined);
 }
+
+const icons = await import(path.resolve(distIcons));
+const EXPECTED_ICON_EXPORTS = [
+  "IconPlus",
+  "IconEdit",
+  "IconSave",
+  "IconDownload",
+  "IconTrash",
+  "IconTrashForever",
+  "IconTrashSweep",
+  "IconTrashRestore",
+  "IconCartPlus",
+  "IconArrowLeft",
+  "IconLogOut",
+  "IconMenu",
+  "IconMoreVertical",
+  "IconHome",
+  "IconSettings",
+  "IconHistory",
+  "IconSun",
+  "IconMoon",
+  "IconStore",
+  "IconShoppingCart",
+  "IconReceipt",
+  "IconBanknote",
+  "IconPackage",
+  "IconTag",
+  "IconUsers",
+  "IconUserCheck",
+];
+for (const name of EXPECTED_ICON_EXPORTS) {
+  check(`icons entry exports "${name}"`, () => icons[name] !== undefined);
+}
+// tsup externalizes every `dependencies` entry (same as the Radix packages),
+// so the glyphs resolve from the consumer's node_modules — which only works
+// if lucide-react is declared where npm will install it with this package.
+check("icons entry's lucide-react import is a declared runtime dependency", () => {
+  const pkg = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
+  return (
+    readFileSync(distIcons, "utf8").includes('from "lucide-react"') &&
+    typeof pkg.dependencies["lucide-react"] === "string"
+  );
+});
+check("icons entry keeps per-icon /*#__PURE__*/ annotations (tree-shakeable)", () => {
+  const pure = readFileSync(distIcons, "utf8").match(/__PURE__/g)?.length ?? 0;
+  return pure >= EXPECTED_ICON_EXPORTS.length;
+});
 
 check("exports cn helper", () => {
   const skip = false;
