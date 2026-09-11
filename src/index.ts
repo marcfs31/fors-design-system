@@ -114,6 +114,14 @@ export {
   type CalendarProps,
   type DatePickerProps,
 } from "./components/Calendar";
+export { ConfirmDialog, type ConfirmDialogProps } from "./components/ConfirmDialog";
+export {
+  TablePagination,
+  pageRange,
+  type TablePaginationProps,
+  type TablePaginationLabels,
+  type PageRangeItem,
+} from "./components/TablePagination";
 export {
   SidebarProvider,
   useSidebar,

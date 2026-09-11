@@ -50,6 +50,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
+  TablePagination,
   TableRow,
   Tabs,
   Text,
@@ -112,6 +113,9 @@ const cases: Record<string, React.ReactElement> = {
   ),
   "Progress/68": <Progress value={68} aria-label="Upload" />,
   "Spinner/md": <Spinner label="Loading" />,
+  "TablePagination/page-5-of-14": (
+    <TablePagination count={132} page={5} rowsPerPage={10} onPageChange={() => {}} />
+  ),
   "Skeleton/line": <Skeleton className="h-4 w-32" />,
   "Avatar/initials": <Avatar initials="MF" alt="Marc Fors" />,
   "AvatarGroup/overflow": (
