@@ -26,7 +26,9 @@ import {
   Trash,
   Trash2,
   UserCheck,
+  Upload,
   Users,
+  X,
 } from "lucide-react";
 
 /**
@@ -63,6 +65,7 @@ export const IconPlus = /*#__PURE__*/ createIcon(Plus, "IconPlus");
 export const IconEdit = /*#__PURE__*/ createIcon(Pencil, "IconEdit");
 export const IconSave = /*#__PURE__*/ createIcon(Save, "IconSave");
 export const IconDownload = /*#__PURE__*/ createIcon(Download, "IconDownload");
+export const IconUpload = /*#__PURE__*/ createIcon(Upload, "IconUpload");
 export const IconTrash = /*#__PURE__*/ createIcon(Trash2, "IconTrash");
 export const IconTrashForever = /*#__PURE__*/ createIcon(Trash, "IconTrashForever");
 export const IconTrashSweep = /*#__PURE__*/ createIcon(BrushCleaning, "IconTrashSweep");
@@ -74,6 +77,7 @@ export const IconLogOut = /*#__PURE__*/ createIcon(LogOut, "IconLogOut");
 // Navigation & chrome
 export const IconMenu = /*#__PURE__*/ createIcon(Menu, "IconMenu");
 export const IconMoreVertical = /*#__PURE__*/ createIcon(EllipsisVertical, "IconMoreVertical");
+export const IconX = /*#__PURE__*/ createIcon(X, "IconX");
 export const IconHome = /*#__PURE__*/ createIcon(House, "IconHome");
 export const IconSettings = /*#__PURE__*/ createIcon(Settings, "IconSettings");
 export const IconHistory = /*#__PURE__*/ createIcon(History, "IconHistory");

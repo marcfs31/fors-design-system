@@ -111,6 +111,11 @@ const cases: Record<string, React.ReactElement> = {
       Type error in api.ts
     </Alert>
   ),
+  "Alert/dismissible": (
+    <Alert variant="warning" title="Partial import" onDismiss={() => {}}>
+      3 of 40 rows were skipped.
+    </Alert>
+  ),
   "Progress/68": <Progress value={68} aria-label="Upload" />,
   "Spinner/md": <Spinner label="Loading" />,
   "TablePagination/page-5-of-14": (
